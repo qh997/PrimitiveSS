@@ -1,0 +1,7 @@
+bochsrc
+*.bxrc
+*.img
+*.o
+*.bin
+*.map
+out/

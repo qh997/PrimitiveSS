@@ -1,0 +1,5 @@
+
+LOADER_SEG  equ  09000h
+LOADER_OFF  equ   0100h
+LOADER_ADR  equ  LOADER_SEG * 10h
+LOADER_SZE  equ    010h
