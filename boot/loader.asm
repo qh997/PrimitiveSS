@@ -1,5 +1,5 @@
 
-%include "load.inc"
+%include "defs.inc"
 
 org    LOADER_OFF
 jmp    START
@@ -10,10 +10,19 @@ START:
     mov    es, ax
     mov    ss, ax
     mov    esp, LOADER_OFF
+
+    push   msg_load
+    push   msg_load_len
+    push   0300h
+    call   disp_str1
+    add    esp, 6
+
     jmp    $
 
-msg_boot:       db   "Loading ..."
-msg_boot_len    equ  11
+%include "io.inc"
+
+msg_load:       db   "Loading ..."
+msg_load_len    equ  $ - msg_load
 
 times  512 * LOADER_SZE - 4 - ($ - $$)  db  0
 dd  081192h

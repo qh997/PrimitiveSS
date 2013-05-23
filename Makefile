@@ -21,6 +21,7 @@ BOOT_DIR := $(ROOT_DIR)/boot
 
 everything: init \
 	        boot
+	@echo
 
 all: everything install
 
@@ -37,6 +38,8 @@ clean:
 
 install:
 	@$(MAKE_SUB) $(BOOT_DIR) $@
+	@echo
+	@echo '  sync...'
 	@sync
 
 boot:
