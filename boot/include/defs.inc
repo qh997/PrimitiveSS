@@ -1,13 +1,30 @@
 
-BOOT_PRE_SEG   equ  07c0h
-BOOT_PRE_ADDR  equ  BOOT_PRE_SEG * 10h
-BOOT_SEG       equ  09000h
-BOOT_OFFSET    equ  0200h
-BOOT_ADDR      equ  BOOT_SEG * 10h
+VGA_SEG            equ  0B800h
+VGA_ADDR           equ  VGA_SEG * 10h
+
+BOOT_PRE_SEG       equ  07c0h
+BOOT_PRE_ADDR      equ  BOOT_PRE_SEG * 10h
+BOOT_SEG           equ  09000h
+BOOT_OFFSET        equ  0200h
+BOOT_ADDR          equ  BOOT_SEG * 10h
+
+LOADER_SEG         equ  BOOT_SEG + BOOT_OFFSET / 10h + 20h
+LOADER_OFFSET      equ  0400h
+LOADER_ADDR        equ  LOADER_SEG * 10h
+LOADER_SECTOR      equ  02h
+LOADER_SIZE        equ  LOADER_SECTOR * 200h
+
+KERNEL_BIN_SEG     equ  07000h
+KERNEL_BIN_OFFSET  equ  00h
+KERNEL_BIN_ADDR    equ  KERNEL_BIN_SEG * 10h
+KERNEL_BIN_SECTOR  equ  01h
+KERNEL_BIN_SIZE    equ  KERNEL_BIN_SECTOR * 200h
+
+KERNEL_SEG         equ  050h
+KERNEL_OFFSET      equ  00h
+KERNEL_ADDR        equ  KERNEL_SEG * 10h
+KERNEL_SECTOR      equ  01h
+KERNEL_SIZE        equ  KERNEL_SECTOR * 200h
 
 %define  LOADER_MAGIC  db  "81192"
-LOADER_SEG     equ  BOOT_SEG + BOOT_OFFSET / 10h + 200h
-LOADER_OFFSET  equ  0400h
-LOADER_ADDR    equ  LOADER_SEG * 10h
-LOADER_SECTOR  equ  01h
-LOADER_SIZE    equ  LOADER_SECTOR * 200h
+LOADER_MAGIC_NR  equ  5

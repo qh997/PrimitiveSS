@@ -36,7 +36,7 @@ GO:
     push   msg_boot
     push   msg_boot_len
     push   0000h
-    call   disp_str
+    call   __disp_str
     add    esp, 6
 
     xor    ah, ah ; ┓
@@ -57,10 +57,10 @@ GO:
     push   es
     mov    ax, LOADER_SEG
     mov    es, ax,
-    mov    ax, LOADER_OFFSET + LOADER_SIZE - 5
+    mov    ax, LOADER_OFFSET + LOADER_SIZE - LOADER_MAGIC_NR
     mov    di, ax
     mov    si, loader_mgic
-    mov    cx, 5
+    mov    cx, LOADER_MAGIC_NR
     cld
     CHECK_LOADER:
         cmp    cx, 0
@@ -68,16 +68,16 @@ GO:
         dec    cx
         lodsb
         cmp    al, byte [es:di]
-        jz     GO_ON
+        jz     GOON_CHECK
 
         push   msg_loader_err
         push   msg_loader_err_len
         push   0200h
-        call   disp_str
+        call   __disp_str
         add    esp, 6
         jmp    $
 
-        GO_ON:
+        GOON_CHECK:
             inc    di
             jmp    CHECK_LOADER
 
@@ -87,12 +87,12 @@ GO:
     push   msg_ready
     push   msg_ready_len
     push   0102h
-    call   disp_str
+    call   __disp_str
     add    esp, 6
 
     jmp    LOADER_SEG:LOADER_OFFSET
 
-%include "io.inc"
+%include "io_rm.inc"
 
 msg_boot:            db   "Booting ..."
 msg_boot_len         equ  $ - msg_boot

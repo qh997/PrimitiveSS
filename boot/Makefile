@@ -15,9 +15,9 @@ BOOT_IMG := $(ROOT_DIR)/boot.img
 
 INC_PATH := ./include
 INCLUDES := $(INC_PATH)/defs.inc \
-            $(INC_PATH)/io.inc
+            $(INC_PATH)/io_rm.inc
 
-BOOT_BIN   := $(OUT_DIR)/boot_sector.bin
+BOOT_BIN   := $(OUT_DIR)/boot.bin
 LOADER_BIN := $(OUT_DIR)/loader.bin
 
 .PHONY: everything all new init clean install install_boot
@@ -43,7 +43,7 @@ install_boot: $(BOOT_BIN)
 	$(SHOW_INSTAL) $< $(TREAT_PATH)
 	dd if=$^ of=$(BOOT_IMG) bs=512 count=1 conv=notrunc $(SILENCE)
 
-$(BOOT_BIN): boot_sector.asm $(INCLUDES)
+$(BOOT_BIN): boot.asm $(INCLUDES)
 	$(SHOW_CPL_AS) $@ $(TREAT_PATH)
 	@$(AS) -I $(INC_PATH)/ -o $@ $<
 

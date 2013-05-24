@@ -1,5 +1,5 @@
 
-disp_str:
+__disp_str:
     push   bp
     mov    bp, [esp + 8]
     push   cx
@@ -12,7 +12,6 @@ disp_str:
 
     mov    ax, cs
     mov    es, ax
-
     mov    ax, 1301h
     mov    bx, 0007h
     int    10h
@@ -23,6 +22,16 @@ disp_str:
     pop   dx
     pop   cx
     pop   bp
-
     ret
-    
+
+__kill_motor:
+    push   dx
+    push   ax
+
+    mov    dx, 03F2h
+    mov    al, 0
+    out    dx, al
+
+    pop    ax
+    pop    dx
+    ret
