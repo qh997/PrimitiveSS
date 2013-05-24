@@ -15,7 +15,8 @@ BOOT_IMG := $(ROOT_DIR)/boot.img
 
 INC_PATH := ./include
 INCLUDES := $(INC_PATH)/defs.inc \
-            $(INC_PATH)/io_rm.inc
+            $(INC_PATH)/io_rm.inc \
+            $(INC_PATH)/io_pm.inc
 
 BOOT_BIN   := $(OUT_DIR)/boot.bin
 LOADER_BIN := $(OUT_DIR)/loader.bin

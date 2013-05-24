@@ -25,8 +25,8 @@ START:
     mov    ss, ax
     mov    sp, LOADER_OFFSET
 
-    push   msg_load_start
-    push   msg_load_start_len
+    push   _msg_load_start
+    push   _msg_load_start_len
     push   0300h
     call   __disp_str
     add    esp, 6
@@ -50,8 +50,8 @@ START:
 
     call   __kill_motor
 
-    push   msg_load_ready
-    push   msg_load_ready_len
+    push   _msg_load_ready
+    push   _msg_load_ready_len
     push   0402h
     call   __disp_str
     add    esp, 6
@@ -101,19 +101,25 @@ PM_START:
     mov    ax, sel_v
     mov    gs, ax
 
-    mov    ah, 0Fh
-    mov    al, 'P'
-    mov    edi, dword [dwDispPos]
-    mov    [gs:edi], ax
+    push   strPmStart
+    push   dword [dwDispPos]
+    call   _disp_str
+    add    esp, 8
+    mov    dword [dwDispPos], eax
+
     jmp    $
 
-DATA1:
-    msg_load_start:     db   "Loading ..."
-    msg_load_start_len  equ  $ - msg_load_start
-    msg_load_ready:     db   "ready"
-    msg_load_ready_len  equ  $ - msg_load_ready
+%include "io_pm.inc"
 
-    _dwDispPos:       dd  0 ;(80 * 6 + 0) * 2
+DATA1:
+    _msg_load_start:     db   "Loading ..."
+    _msg_load_start_len  equ  $ - _msg_load_start
+    _msg_load_ready:     db   "ready"
+    _msg_load_ready_len  equ  $ - _msg_load_ready
+
+    _strPmStart:        db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", 0
+
+    _dwDispPos:       dd  0
     _dwMCRNumber:     dd  0
     _ARDStruct:
         _dwBaseAddrLow:   dd  0
@@ -123,6 +129,7 @@ DATA1:
         _dwType:          dd  0
     _MemChkBuf: times   256 db  0
 
+    strPmStart       equ  LOADER_ADDR + _strPmStart
     dwDispPos        equ  LOADER_ADDR + _dwDispPos
     dwMCRNumber      equ  LOADER_ADDR + _dwMCRNumber
     ARDStruct        equ  LOADER_ADDR + _ARDStruct
