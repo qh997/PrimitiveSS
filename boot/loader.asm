@@ -101,19 +101,17 @@ PM_START:
     mov    ax, sel_v
     mov    gs, ax
 
+    push   03h
     push   strPmStart
     call   _disp_str
-    add    esp, 4
+    add    esp, 8
 
     call   _disp_enter
-    mov    ebx, [dwCharColor]
-    mov    eax, 08h
-    mov    [dwCharColor], eax
+
+    push   08h
     push   0ffffffffh
     call   _disp_int
-    add    esp, 4
-    mov    eax, 08h
-    mov    [dwCharColor], ebx
+    add    esp, 8
 
     call   _disp_enter
 
@@ -131,7 +129,6 @@ DATA1:
     _szReturn:        db  CHAR_ENTER, 0
     _szSpace:         db  " ", 0
     _dwDispPos:       dd  0
-    _dwCharColor:     dd  0bh
     _dwMCRNumber:     dd  0
     _ARDStruct:
         _dwBaseAddrLow:   dd  0
@@ -145,7 +142,6 @@ DATA1:
     szReturn         equ  LOADER_ADDR + _szReturn
     szSpace          equ  LOADER_ADDR + _szSpace
     dwDispPos        equ  LOADER_ADDR + _dwDispPos
-    dwCharColor      equ  LOADER_ADDR + _dwCharColor
     dwMCRNumber      equ  LOADER_ADDR + _dwMCRNumber
     ARDStruct        equ  LOADER_ADDR + _ARDStruct
         dwBaseAddrLow   equ  LOADER_ADDR + _dwBaseAddrLow

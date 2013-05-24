@@ -1,11 +1,13 @@
 
 _disp_str:
+    mov    eax, [esp + 8]
     push   esi
     mov    esi, [esp + 8]
     push   edi
 
     mov    edi, [dwDispPos]
-    mov    ah, [dwCharColor]
+    shl    eax, 8
+    and    ax, 0ff00h
     .start:
         lodsb
         test   al, al
@@ -39,13 +41,15 @@ _disp_str:
 
 _disp_int:
     push   eax
+    mov    eax, [esp + 12]
     push   edx
     mov    edx, [esp + 12]
     push   edi
+    push   ebx
 
+    shl    eax, 8
+    and    ax, 0ff00h
     mov    edi, [dwDispPos]
-    xor    eax, eax
-    mov    ah, [dwCharColor]
     mov    al, '0'
     mov    [gs:edi], ax
     add    edi, 2
@@ -53,22 +57,28 @@ _disp_int:
     mov    [gs:edi], ax
     add    edi, 2
     mov    [dwDispPos], edi
+    mov    bh, ah
 
     mov    eax, edx
     shr    eax, 24
+    mov    ah, bh
     call   _disp_al
 
     mov    eax, edx
     shr    eax, 16
+    mov    ah, bh
     call   _disp_al
 
     mov    eax, edx
     shr    eax, 8
+    mov    ah, bh
     call   _disp_al
 
     mov    eax, edx
+    mov    ah, bh
     call   _disp_al
 
+    pop    ebx
     pop    edi
     pop    edx
     pop    eax
@@ -120,7 +130,6 @@ _disp_al:
     push   ecx
 
     mov    edi, [dwDispPos]
-    mov    ah, [dwCharColor]
     mov    dl, al
     shr    al, 4
     mov    ecx, 2
