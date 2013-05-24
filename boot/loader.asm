@@ -102,10 +102,8 @@ PM_START:
     mov    gs, ax
 
     push   strPmStart
-    push   dword [dwDispPos]
     call   _disp_str
-    add    esp, 8
-    mov    dword [dwDispPos], eax
+    add    esp, 4
 
     jmp    $
 
@@ -117,9 +115,9 @@ DATA1:
     _msg_load_ready:     db   "ready"
     _msg_load_ready_len  equ  $ - _msg_load_ready
 
-    _strPmStart:        db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", 0
-
+    _strPmStart:      db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", 0
     _dwDispPos:       dd  0
+    _dwCharColor:     dd  0bh
     _dwMCRNumber:     dd  0
     _ARDStruct:
         _dwBaseAddrLow:   dd  0
@@ -131,6 +129,7 @@ DATA1:
 
     strPmStart       equ  LOADER_ADDR + _strPmStart
     dwDispPos        equ  LOADER_ADDR + _dwDispPos
+    dwCharColor      equ  LOADER_ADDR + _dwCharColor
     dwMCRNumber      equ  LOADER_ADDR + _dwMCRNumber
     ARDStruct        equ  LOADER_ADDR + _ARDStruct
         dwBaseAddrLow   equ  LOADER_ADDR + _dwBaseAddrLow

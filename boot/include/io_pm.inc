@@ -1,11 +1,11 @@
 
 _disp_str:
     push   esi
-    mov    esi, [esp + 12]
+    mov    esi, [esp + 8]
     push   edi
-    mov    edi, [esp + 12]
 
-    mov    ah, 0bh
+    mov    edi, [dwDispPos]
+    mov    ah, [dwCharColor]
     .start:
         lodsb
         test   al, al
@@ -30,11 +30,9 @@ _disp_str:
             jmp    .start
 
         .end:
-            mov    eax, edi
+            mov    [dwDispPos], edi
 
-    push   eax
     call   _update_cursor
-    pop    eax
 
     pop    edi
     pop    esi
@@ -42,9 +40,9 @@ _disp_str:
 
 _update_cursor:
     push   ebx
-    mov    ebx, [esp + 8]
     push   edx
 
+    mov    ebx, [dwDispPos]
     shr    ebx, 1
     mov    dx, 03D4h
     mov    al, 0eh
