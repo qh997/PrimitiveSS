@@ -30,12 +30,60 @@ _disp_str:
             jmp    .start
 
         .end:
-            mov    [dwDispPos], edi
-
+    mov    [dwDispPos], edi
     call   _update_cursor
 
     pop    edi
     pop    esi
+    ret
+
+_disp_int:
+    push   eax
+    push   edx
+    mov    edx, [esp + 12]
+    push   edi
+
+    mov    edi, [dwDispPos]
+    xor    eax, eax
+    mov    ah, [dwCharColor]
+    mov    al, '0'
+    mov    [gs:edi], ax
+    add    edi, 2
+    mov    al, 'x'
+    mov    [gs:edi], ax
+    add    edi, 2
+    mov    [dwDispPos], edi
+
+    mov    eax, edx
+    shr    eax, 24
+    call   _disp_al
+
+    mov    eax, edx
+    shr    eax, 16
+    call   _disp_al
+
+    mov    eax, edx
+    shr    eax, 8
+    call   _disp_al
+
+    mov    eax, edx
+    call   _disp_al
+
+    pop    edi
+    pop    edx
+    pop    eax
+    ret
+
+_disp_enter:
+    push   szReturn
+    call   _disp_str
+    add    esp, 4
+    ret
+
+_disp_space:
+    push   szSpace
+    call   _disp_str
+    add    esp, 4
     ret
 
 _update_cursor:
@@ -64,4 +112,36 @@ _update_cursor:
 
     pop    edx
     pop    ebx
+    ret
+
+_disp_al:
+    push   edi
+    push   edx
+    push   ecx
+
+    mov    edi, [dwDispPos]
+    mov    ah, [dwCharColor]
+    mov    dl, al
+    shr    al, 4
+    mov    ecx, 2
+    .start:
+        and    al, 0fh
+        cmp    al, 9
+        ja     .a
+        add    al, '0'
+        jmp    .end
+        .a:
+        sub    al, 0ah
+        add    al, 'A'
+        .end:
+        mov    [gs:edi], ax
+        add    edi, 2
+        mov    al, dl
+        loop   .start
+    mov    [dwDispPos], edi
+    call   _update_cursor
+
+    pop    ecx
+    pop    edx
+    pop    edi
     ret

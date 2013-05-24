@@ -28,7 +28,7 @@ START:
     push   _msg_load_start
     push   _msg_load_start_len
     push   0300h
-    call   __disp_str
+    call   r_disp_str
     add    esp, 6
 
     mov    ebx, 0
@@ -48,12 +48,12 @@ START:
             mov    dword [_dwMCRNumber], 0
         mcok:
 
-    call   __kill_motor
+    call   r_kill_motor
 
     push   _msg_load_ready
     push   _msg_load_ready_len
     push   0402h
-    call   __disp_str
+    call   r_disp_str
     add    esp, 6
 
     mov    ah, 03h
@@ -105,6 +105,18 @@ PM_START:
     call   _disp_str
     add    esp, 4
 
+    call   _disp_enter
+    mov    ebx, [dwCharColor]
+    mov    eax, 08h
+    mov    [dwCharColor], eax
+    push   0ffffffffh
+    call   _disp_int
+    add    esp, 4
+    mov    eax, 08h
+    mov    [dwCharColor], ebx
+
+    call   _disp_enter
+
     jmp    $
 
 %include "io_pm.inc"
@@ -115,7 +127,9 @@ DATA1:
     _msg_load_ready:     db   "ready"
     _msg_load_ready_len  equ  $ - _msg_load_ready
 
-    _strPmStart:      db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", 0
+    _strPmStart:      db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", CHAR_ENTER, 0
+    _szReturn:        db  CHAR_ENTER, 0
+    _szSpace:         db  " ", 0
     _dwDispPos:       dd  0
     _dwCharColor:     dd  0bh
     _dwMCRNumber:     dd  0
@@ -128,6 +142,8 @@ DATA1:
     _MemChkBuf: times   256 db  0
 
     strPmStart       equ  LOADER_ADDR + _strPmStart
+    szReturn         equ  LOADER_ADDR + _szReturn
+    szSpace          equ  LOADER_ADDR + _szSpace
     dwDispPos        equ  LOADER_ADDR + _dwDispPos
     dwCharColor      equ  LOADER_ADDR + _dwCharColor
     dwMCRNumber      equ  LOADER_ADDR + _dwMCRNumber

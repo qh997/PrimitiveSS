@@ -36,7 +36,7 @@ GO:
     push   msg_boot
     push   msg_boot_len
     push   0000h
-    call   __disp_str
+    call   r_disp_str
     add    esp, 6
 
     xor    ah, ah ; ┓
@@ -73,7 +73,7 @@ GO:
         push   msg_loader_err
         push   msg_loader_err_len
         push   0200h
-        call   __disp_str
+        call   r_disp_str
         add    esp, 6
         jmp    $
 
@@ -87,7 +87,7 @@ GO:
     push   msg_ready
     push   msg_ready_len
     push   0102h
-    call   __disp_str
+    call   r_disp_str
     add    esp, 6
 
     jmp    LOADER_SEG:LOADER_OFFSET

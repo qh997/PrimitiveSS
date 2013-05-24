@@ -30,4 +30,3 @@ KERNEL_SIZE        equ  KERNEL_SECTOR * 200h
 LOADER_MAGIC_NR  equ  5
 
 CHAR_ENTER  equ  0ah
-CHAR_SPACE  equ  ' '

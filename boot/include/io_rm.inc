@@ -1,5 +1,5 @@
 
-__disp_str:
+r_disp_str:
     push   bp
     mov    bp, [esp + 8]
     push   cx
@@ -24,7 +24,7 @@ __disp_str:
     pop   bp
     ret
 
-__kill_motor:
+r_kill_motor:
     push   dx
     push   ax
 
