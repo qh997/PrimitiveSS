@@ -39,8 +39,6 @@ clean:
 install:
 	@$(MAKE_SUB) $(BOOT_DIR) $@
 	@echo
-	@echo '  sync...'
-	@sync
 
 boot:
 	@$(MAKE_SUB) $(BOOT_DIR)

@@ -1,17 +1,26 @@
 
 %include "defs.inc"
 
-org    07c00h
+org    BOOT_ADDR + BOOT_OFFSET
 jmp    short START
 
-STACK_TOP  equ  07c00h
-
 START:
+    mov    ax, BOOT_PRE_SEG
+    mov    ds, ax
+    mov    ax, BOOT_SEG
+    mov    es, ax
+    xor    si, si
+    mov    di, BOOT_OFFSET
+    mov    cx, 256
+    rep    movsw
+    jmp    BOOT_SEG:GOON
+
+GOON:
     mov    ax, cs
     mov    ds, ax
     mov    es, ax
     mov    ss, ax
-    mov    esp, STACK_TOP
+    mov    esp, BOOT_OFFSET
 
     mov    ax, 0600h  ; ┓
     mov    bx, 0700h  ; ┃
