@@ -16,11 +16,14 @@ SHOW_INSTAL := @echo -n ' INSTALL          '; echo echo
 ROOT_DIR := .
 OUT_DIR := $(ROOT_DIR)/out
 BOOT_DIR := $(ROOT_DIR)/boot
+KERNEL_DIR := $(ROOT_DIR)/kernel
 
-.PHONY: everything all new init clean install boot
+OBJECTS += boot
+OBJECTS += kernel
 
-everything: init \
-	        boot
+.PHONY: everything all new init clean install $(OBJECTS)
+
+everything: init $(OBJECTS)
 	@echo
 
 all: everything install
@@ -32,13 +35,18 @@ init:
 
 clean:
 	@$(MAKE_SUB) $(BOOT_DIR) $@
+	@$(MAKE_SUB) $(KERNEL_DIR) $@
 	@echo '  clean out ...'
 	@rm -rf $(OUT_DIR)
 	@echo
 
 install:
 	@$(MAKE_SUB) $(BOOT_DIR) $@
+	@$(MAKE_SUB) $(KERNEL_DIR) $@
 	@echo
 
 boot:
 	@$(MAKE_SUB) $(BOOT_DIR)
+
+kernel:
+	@$(MAKE_SUB) $(KERNEL_DIR)

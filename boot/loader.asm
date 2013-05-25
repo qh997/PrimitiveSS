@@ -1,4 +1,3 @@
-
 %include "defs.inc"
 %include "protect.inc"
 
@@ -31,6 +30,27 @@ START:
     call   r_disp_str
     add    esp, 6
 
+    xor    ah, ah ; ┓
+    xor    dl, dl ; ┣ 软驱复位
+    int    13h    ; ┛
+
+    push   es
+    mov    ax, KERNEL_BIN_SEG
+    mov    es, ax
+    mov    dx, 0000h               ; drive 0, head 0
+    mov    cx, 02h + LOADER_SECTOR ; sector 2 + LOADER_SECTOR, track 0
+    mov    bx, KERNEL_BIN_OFFSET   ; address
+    mov    ah, 02h                 ; service 2
+    mov    al, KERNEL_BIN_SECTOR   ; nr of sectors
+    int    13h
+    pop    es
+
+    push   _msg_get_mem
+    push   _msg_get_mem_len
+    push   0400h
+    call   r_disp_str
+    add    esp, 6
+
     mov    ebx, 0
     mov    di, _MemChkBuf
     mcloop:
@@ -52,7 +72,7 @@ START:
 
     push   _msg_load_ready
     push   _msg_load_ready_len
-    push   0402h
+    push   0502h
     call   r_disp_str
     add    esp, 6
 
@@ -120,8 +140,10 @@ PM_START:
 %include "io_pm.inc"
 
 DATA1:
-    _msg_load_start:     db   "Loading ..."
+    _msg_load_start:     db   "Loading kernrl ..."
     _msg_load_start_len  equ  $ - _msg_load_start
+    _msg_get_mem:        db   "Get memory info ..."
+    _msg_get_mem_len     equ  $ - _msg_get_mem
     _msg_load_ready:     db   "ready"
     _msg_load_ready_len  equ  $ - _msg_load_ready
 

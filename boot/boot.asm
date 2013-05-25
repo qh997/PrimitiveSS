@@ -1,4 +1,3 @@
-
 %include "defs.inc"
 
 org    BOOT_ADDR + BOOT_OFFSET
@@ -46,11 +45,11 @@ GO:
     push   es
     mov    ax, LOADER_SEG
     mov    es, ax
-    mov    dx, 0000h
-    mov    cx, 0002h
-    mov    bx, LOADER_OFFSET
-    mov    ah, 02h
-    mov    al, LOADER_SECTOR
+    mov    dx, 0000h         ; drive 0, head 0
+    mov    cx, 02h           ; sector 2, track 0
+    mov    bx, LOADER_OFFSET ; address
+    mov    ah, 02h           ; service 2
+    mov    al, LOADER_SECTOR ; nr of sectors
     int    13h
     pop    es
 
