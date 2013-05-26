@@ -32,7 +32,7 @@ GO:
     mov    dx, 0
     int    10h
 
-    __DISP_STR  0000h, msg_boot
+    R_DISP_STR  0000h, msg_boot
 
     call   r_reset_floppy
 
@@ -59,7 +59,7 @@ GO:
         cmp    al, byte [es:di]
         jz     GOON_CHECK
 
-        __DISP_STR  0200h, msg_loader_err
+        R_DISP_STR  0200h, msg_loader_err
 
         jmp    $
 
@@ -70,7 +70,7 @@ GO:
         LOADER_FOUNT:
     pop    es
 
-    __DISP_STR  0102h, msg_ready
+    R_DISP_STR  0102h, msg_ready
 
     jmp    LOADER_SEG:LOADER_OFFSET
 

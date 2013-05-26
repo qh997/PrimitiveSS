@@ -14,9 +14,10 @@ OUT_DIR  := $(ROOT_DIR)/out/boot
 BOOT_IMG := $(ROOT_DIR)/boot.img
 
 INC_PATH := ./include
-INCLUDES := $(INC_PATH)/defs.inc \
-            $(INC_PATH)/io_rm.inc \
-            $(INC_PATH)/io_pm.inc
+INCLUDES := $(INC_PATH)/defs.inc
+INCLUDES += $(INC_PATH)/io_rm.inc
+INCLUDES += $(INC_PATH)/protect.inc
+INCLUDES += $(INC_PATH)/elf.inc
 
 BOOT_BIN   := $(OUT_DIR)/boot.bin
 LOADER_BIN := $(OUT_DIR)/loader.bin

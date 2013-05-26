@@ -24,7 +24,7 @@ START:
     mov    ss, ax
     mov    sp, LOADER_OFFSET
 
-    __DISP_STR  0300h, _msg_load_start
+    R_DISP_STR  0300h, _msg_load_start
 
     call   r_reset_floppy
 
@@ -35,7 +35,7 @@ START:
     call   r_read_sector
     add    esp, 8
 
-    __DISP_STR  0400h, _msg_get_mem
+    R_DISP_STR  0400h, _msg_get_mem
 
     mov    ebx, 0
     mov    di, _MemChkBuf
@@ -56,7 +56,7 @@ START:
 
     call   r_kill_motor
 
-    __DISP_STR  0502h, _msg_load_ready
+    R_DISP_STR  0502h, _msg_load_ready
 
     mov    ah, 03h
     xor    bh, bh
@@ -103,23 +103,15 @@ PM_START:
     mov    ax, sel_v
     mov    gs, ax
 
-    push   03h
-    push   strPmStart
-    call   _disp_str
-    add    esp, 8
-
+    _DISP_STR 03h, strPmStart
     call   _disp_enter
 
-    push   08h
-    push   0ffffffffh
-    call   _disp_int
-    add    esp, 8
+    call   _dispose_kernel
 
-    call   _disp_enter
-
-    jmp    $
+    jmp    sel_t:0400h
 
 %include "io_pm.inc"
+%include "elf.inc"
 
 DATA1:
     _msg_load_start:     db   "Loading kernrl ..."

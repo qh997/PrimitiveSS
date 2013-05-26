@@ -29,10 +29,24 @@ LOADER_MAGIC_NR  equ  5
 
 CHAR_ENTER  equ  0ah
 
-%macro __DISP_STR 2
+%macro R_DISP_STR 2
     push   %2
     push   %2_len
     push   %1
     call   r_disp_str
     add    esp, 6
+%endmacro
+
+%macro _DISP_STR 2
+    push   %1
+    push   %2
+    call   _disp_str
+    add    esp, 8
+%endmacro
+
+%macro _DISP_INT 2
+    push   %1
+    push   %2
+    call   _disp_int
+    add    esp, 8
 %endmacro
