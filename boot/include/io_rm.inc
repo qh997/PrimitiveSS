@@ -24,6 +24,19 @@ r_disp_str:
     pop   bp
     ret
 
+r_reset_floppy:
+    push   ax
+    push   dx
+
+    xor    ah, ah
+    xor    dl, dl
+    int    13h
+
+    pop    dx
+    pop    ax
+    ret
+
+
 r_kill_motor:
     push   dx
     push   ax

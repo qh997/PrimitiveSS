@@ -32,24 +32,18 @@ GO:
     mov    dx, 0
     int    10h
 
-    push   msg_boot
-    push   msg_boot_len
-    push   0000h
-    call   r_disp_str
-    add    esp, 6
+    __DISP_STR  0000h, msg_boot
 
-    xor    ah, ah ; ┓
-    xor    dl, dl ; ┣ 软驱复位
-    int    13h    ; ┛
+    call   r_reset_floppy
 
     push   es
     mov    ax, LOADER_SEG
     mov    es, ax
-    mov    dx, 0000h         ; drive 0, head 0
-    mov    cx, 02h           ; sector 2, track 0
-    mov    bx, LOADER_OFFSET ; address
-    mov    ah, 02h           ; service 2
-    mov    al, LOADER_SECTOR ; nr of sectors
+    mov    dx, 0000h            ; drive 0, head 0
+    mov    cx, 02h              ; sector 2, track 0
+    mov    bx, LOADER_OFFSET    ; address
+    mov    ah, 02h              ; service 2
+    mov    al, LOADER_SECTOR_NR ; nr of sectors
     int    13h
     pop    es
 
@@ -83,11 +77,7 @@ GO:
         LOADER_FOUNT:
     pop    es
 
-    push   msg_ready
-    push   msg_ready_len
-    push   0102h
-    call   r_disp_str
-    add    esp, 6
+    __DISP_STR  0102h, msg_ready
 
     jmp    LOADER_SEG:LOADER_OFFSET
 

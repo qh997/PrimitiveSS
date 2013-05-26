@@ -24,32 +24,22 @@ START:
     mov    ss, ax
     mov    sp, LOADER_OFFSET
 
-    push   _msg_load_start
-    push   _msg_load_start_len
-    push   0300h
-    call   r_disp_str
-    add    esp, 6
+    __DISP_STR  0300h, _msg_load_start
 
-    xor    ah, ah ; ┓
-    xor    dl, dl ; ┣ 软驱复位
-    int    13h    ; ┛
+    call   r_reset_floppy
 
     push   es
     mov    ax, KERNEL_BIN_SEG
     mov    es, ax
-    mov    dx, 0000h               ; drive 0, head 0
-    mov    cx, 02h + LOADER_SECTOR ; sector 2 + LOADER_SECTOR, track 0
-    mov    bx, KERNEL_BIN_OFFSET   ; address
-    mov    ah, 02h                 ; service 2
-    mov    al, KERNEL_BIN_SECTOR   ; nr of sectors
+    mov    dx, 0000h                  ; drive 0, head 0
+    mov    cx, 02h + LOADER_SECTOR_NR ; sector 2 + LOADER_SECTOR, track 0
+    mov    bx, KERNEL_BIN_OFFSET      ; address
+    mov    ah, 02h                    ; service 2
+    mov    al, KERNEL_BIN_SECTOR_NR   ; nr of sectors
     int    13h
     pop    es
 
-    push   _msg_get_mem
-    push   _msg_get_mem_len
-    push   0400h
-    call   r_disp_str
-    add    esp, 6
+    __DISP_STR  0400h, _msg_get_mem
 
     mov    ebx, 0
     mov    di, _MemChkBuf
@@ -70,11 +60,7 @@ START:
 
     call   r_kill_motor
 
-    push   _msg_load_ready
-    push   _msg_load_ready_len
-    push   0502h
-    call   r_disp_str
-    add    esp, 6
+    __DISP_STR  0502h, _msg_load_ready
 
     mov    ah, 03h
     xor    bh, bh
