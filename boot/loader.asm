@@ -28,16 +28,12 @@ START:
 
     call   r_reset_floppy
 
-    push   es
-    mov    ax, KERNEL_BIN_SEG
-    mov    es, ax
-    mov    dx, 0000h                  ; drive 0, head 0
-    mov    cx, 02h + LOADER_SECTOR_NR ; sector 2 + LOADER_SECTOR, track 0
-    mov    bx, KERNEL_BIN_OFFSET      ; address
-    mov    ah, 02h                    ; service 2
-    mov    al, KERNEL_BIN_SECTOR_NR   ; nr of sectors
-    int    13h
-    pop    es
+    push   01h + LOADER_SECTOR_NR
+    push   KERNEL_BIN_SECTOR_NR
+    push   KERNEL_BIN_SEG
+    push   KERNEL_BIN_OFFSET
+    call   r_read_sector
+    add    esp, 8
 
     __DISP_STR  0400h, _msg_get_mem
 

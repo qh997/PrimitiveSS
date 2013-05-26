@@ -36,16 +36,12 @@ GO:
 
     call   r_reset_floppy
 
-    push   es
-    mov    ax, LOADER_SEG
-    mov    es, ax
-    mov    dx, 0000h            ; drive 0, head 0
-    mov    cx, 02h              ; sector 2, track 0
-    mov    bx, LOADER_OFFSET    ; address
-    mov    ah, 02h              ; service 2
-    mov    al, LOADER_SECTOR_NR ; nr of sectors
-    int    13h
-    pop    es
+    push   01h
+    push   LOADER_SECTOR_NR
+    push   LOADER_SEG
+    push   LOADER_OFFSET
+    call   r_read_sector
+    add    esp, 8
 
     push   es
     mov    ax, LOADER_SEG
@@ -63,11 +59,8 @@ GO:
         cmp    al, byte [es:di]
         jz     GOON_CHECK
 
-        push   msg_loader_err
-        push   msg_loader_err_len
-        push   0200h
-        call   r_disp_str
-        add    esp, 6
+        __DISP_STR  0200h, msg_loader_err
+
         jmp    $
 
         GOON_CHECK:
