@@ -24,6 +24,9 @@ KERNEL_SEG            equ  00h
 KERNEL_OFFSET         equ  0400h
 KERNEL_ADDR           equ  KERNEL_SEG * 10h
 
+PHY_DISP_POS          equ  090000h
+PHY_MEM_SIZE          equ  PHY_DISP_POS + 04h
+
 %define  LOADER_MAGIC  db  "81192"
 LOADER_MAGIC_NR  equ  5
 

@@ -111,6 +111,11 @@ PM_START:
 
     call   _dispose_kernel
 
+    mov    eax, [dwDispPos]
+    mov    dword [PHY_DISP_POS], eax
+    mov    eax, [dwMemSize]
+    mov    dword [PHY_MEM_SIZE], eax
+
     jmp    sel_t:(KERNEL_ADDR + KERNEL_OFFSET)
 
 %include "io_pm.inc"
