@@ -1,12 +1,12 @@
 
-ELF_HEADER_PHOFF  equ  01ch
-ELF_HEADER_PHNUM  equ  02ch
+H_PHOFF  equ  01ch
+H_PHNUM  equ  02ch
 
 _dispose_kernel:
     xor    esi, esi                              ;
-    mov    cx, word [KERNEL_BIN_ADDR + 2ch]      ; ┓ 44 bytes = 2ch
+    mov    cx, word [KERNEL_BIN_ADDR + H_PHNUM]  ; ┓ 44 bytes = 2ch
     movzx  ecx, cx                               ; ┻ ecx = pELFHdr->e_phnum
-    mov    esi, [KERNEL_BIN_ADDR + 1ch]          ; 28 bytes = 1ch
+    mov    esi, [KERNEL_BIN_ADDR + H_PHOFF]      ; 28 bytes = 1ch
     add    esi, KERNEL_BIN_ADDR                  ; esi = KERNEL_BIN_ADDR + pELFHdr->e_phoff
     .begin:                                      ; for (i = e_phnum; i > 0; --i) {
         mov    eax, [esi + 0]                    ;     \\ Elf32_Phdr->p_type

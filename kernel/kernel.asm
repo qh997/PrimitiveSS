@@ -9,7 +9,7 @@ _start:
     call   kernel_init
 
     mov    ah, 0Fh
-    mov    al, 'K'
+    mov    al, 'E'
     mov    [gs:((80 * 0 + 39) * 2)], ax
 
     jmp    $

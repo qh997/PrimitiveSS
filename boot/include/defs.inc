@@ -44,6 +44,20 @@ CHAR_ENTER  equ  0ah
     add    esp, 8
 %endmacro
 
+%macro _DISP_SPACE 0
+    push   0h
+    push   szSpace
+    call   _disp_str
+    add    esp, 8
+%endmacro
+
+%macro _DISP_ENTER 0
+    push   0h
+    push   szReturn
+    call   _disp_str
+    add    esp, 8
+%endmacro
+
 %macro _DISP_INT 2
     push   %1
     push   %2

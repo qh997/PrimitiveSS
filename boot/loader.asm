@@ -104,14 +104,57 @@ PM_START:
     mov    gs, ax
 
     _DISP_STR 03h, strPmStart
-    call   _disp_enter
+    _DISP_ENTER
+
+    _DISP_STR 08h, szMemChkTitle
+    call   DispMemInfo
 
     call   _dispose_kernel
 
-    jmp    sel_t:0400h
+    jmp    sel_t:(KERNEL_ADDR + KERNEL_OFFSET)
 
 %include "io_pm.inc"
 %include "elf.inc"
+
+DispMemInfo:
+    push   esi
+    push   edi
+    push   ecx
+
+    mov    esi, MemChkBuf
+    mov    ecx, [dwMCRNumber]           ; for (i=0; i<[MCRNumber]; i++)
+    .loop:                              ; {
+        mov    edx, 5                   ;     for (j=0; j<5; j++)
+        mov    edi, ARDStruct           ;     {
+        .1:                             ;
+            push   dword [esi]          ;
+            _DISP_INT  0fh, dword [esi] ;         DispInt(MemChkBuf[j*4]); // 显示一个成员
+            _DISP_SPACE                 ;         printf(" ");
+            pop    eax                  ;
+            stosd                       ;         ARDStruct[j*4] = MemChkBuf[j*4];
+            add    esi, 4               ;
+            dec    edx                  ;
+            cmp    edx, 0               ;
+            jnz    .1                   ;     }
+        _DISP_ENTER                     ;     printf("\n");
+        cmp    dword [dwType], 1        ;     if (Type == AddressRangeMemory)
+        jne    .2                       ;     {
+        mov    eax, [dwBaseAddrLow]     ;
+        add    eax, [dwLengthLow]       ;
+        cmp    eax, [dwMemSize]         ;         if (BaseAddrLow + LengthLow > MemSize)
+        jb     .2                       ;
+        mov    [dwMemSize], eax         ;             MemSize = BaseAddrLow + LengthLow;
+        .2:                             ;     }
+            loop    .loop               ; }
+
+    _DISP_ENTER
+    _DISP_STR  08h, szRAMSize
+    _DISP_INT  0fh, dword [dwMemSize]
+
+    pop    ecx
+    pop    edi
+    pop    esi
+    ret
 
 DATA1:
     _msg_load_start:     db   "Loading kernrl ..."
@@ -122,9 +165,12 @@ DATA1:
     _msg_load_ready_len  equ  $ - _msg_load_ready
 
     _strPmStart:      db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", CHAR_ENTER, 0
+    _szMemChkTitle:   db  " BaseAddrL  BaseAddrH    LengthL    LengthH       Type", 0Ah, 0
+    _szRAMSize:       db  "RAM size: ", 0
     _szReturn:        db  CHAR_ENTER, 0
     _szSpace:         db  " ", 0
     _dwDispPos:       dd  0
+    _dwMemSize:       dd  0
     _dwMCRNumber:     dd  0
     _ARDStruct:
         _dwBaseAddrLow:   dd  0
@@ -135,9 +181,12 @@ DATA1:
     _MemChkBuf: times   256 db  0
 
     strPmStart       equ  LOADER_ADDR + _strPmStart
+    szMemChkTitle    equ  LOADER_ADDR + _szMemChkTitle
+    szRAMSize        equ  LOADER_ADDR + _szRAMSize
     szReturn         equ  LOADER_ADDR + _szReturn
     szSpace          equ  LOADER_ADDR + _szSpace
     dwDispPos        equ  LOADER_ADDR + _dwDispPos
+    dwMemSize        equ  LOADER_ADDR + _dwMemSize
     dwMCRNumber      equ  LOADER_ADDR + _dwMCRNumber
     ARDStruct        equ  LOADER_ADDR + _ARDStruct
         dwBaseAddrLow   equ  LOADER_ADDR + _dwBaseAddrLow

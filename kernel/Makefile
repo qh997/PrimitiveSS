@@ -59,9 +59,9 @@ $(KERNEL_BIN): $(KERNEL_OBJS)
 	@$(LD) $(LD_FLAGS) $@ $(KERNEL_OBJS)
 
 $(OUT_DIR)/kernel.o: kernel.asm
-	@$(SHOW_CPL_ASM) $< $(TREAT_PATH)
+	@$(SHOW_CPL_ASM) $@ $(TREAT_PATH)
 	@$(AS) $(NASM_FLAGS) $@ $<
 
 $(OUT_DIR)/kernel_init.o: kernel_init.c
-	@$(SHOW_CPL_C) $< $(TREAT_PATH)
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<

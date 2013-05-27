@@ -84,18 +84,6 @@ _disp_int:
     pop    eax
     ret
 
-_disp_enter:
-    push   szReturn
-    call   _disp_str
-    add    esp, 4
-    ret
-
-_disp_space:
-    push   szSpace
-    call   _disp_str
-    add    esp, 4
-    ret
-
 _update_cursor:
     push   ebx
     push   edx
@@ -159,31 +147,18 @@ _memcpy:
     push   ebp
     mov    ebp, esp
 
-    push   esi
     push   edi
-    push   ecx
-
     mov    edi, [ebp + 8]
+    push   esi
     mov    esi, [ebp + 12]
+    push   ecx
     mov    ecx, [ebp + 16]
-    .1:
-        cmp    ecx, 0
-        jz     .2
 
-        mov    al, [ds:esi]
-        inc    esi
-        mov    byte [es:edi], al
-        inc    edi
-
-        dec    ecx
-        jmp    .1
-    .2:
-        mov    eax, [ebp + 8]  ; 返回值
+    rep    movsb
+    mov    eax, [ebp + 8]
 
     pop    ecx
-    pop    edi
     pop    esi
-    mov    esp, ebp
+    pop    edi
     pop    ebp
-
     ret
