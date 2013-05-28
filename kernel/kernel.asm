@@ -1,9 +1,10 @@
-%include "defs.inc"
+%include "boot/defs.inc"
 
-extern  kernel_init
+extern  init
+
+extern  disp_pos
 
 [section .text]
-
 global _start
 
 _start:
@@ -12,6 +13,9 @@ _start:
     mov    eax, STK_TOP
     mov    esp, eax
 
-    call   kernel_init
+    mov    eax, [PHY_DISP_POS]
+    mov    [disp_pos], eax
+
+    call   init
 
     jmp    $

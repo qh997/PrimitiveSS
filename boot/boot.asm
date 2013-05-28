@@ -27,10 +27,10 @@ GO:
     mov    dx, 0184fh ; ┃
     int    10h        ; ┛
 
-    mov    ax, 0200h
-    mov    bx, 0
-    mov    dx, 0
-    int    10h
+    mov    ax, 0200h  ; ┓
+    mov    bx, 0      ; ┃
+    mov    dx, 0      ; ┣ 光标复位
+    int    10h        ; ┛
 
     R_DISP_STR  0000h, msg_boot
 

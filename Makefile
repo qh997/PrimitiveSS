@@ -27,7 +27,8 @@ KERNEL_BIN := $(OUT_DIR)/kernel.bin
 KERNEL_MAP := $(OUT_DIR)/KERNEL.map
 
 LD_FLAGS := -s -m elf_i386 -Map $(KERNEL_MAP) \
-            -Ttext `sed -n '/^KERNEL_OFFSET/s/^.* \([a-fA-F0-9]*\)h/0x\1/p' $(INC_PATH)/boot/defs.inc` \
+            -Ttext `sed -n '/^KERNEL_OFFSET/s/^.* \([a-fA-F0-9]*\)h/0x\1/p' \
+                    $(INC_PATH)/boot/defs.inc` \
             -o
 
 OBJECTS += boot
