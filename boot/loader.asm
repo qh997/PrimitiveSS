@@ -7,6 +7,7 @@ jmp    START
 GDT_NONE: DESCRIPTOR        0,       0, 0
 GDT_TEXT: DESCRIPTOR        0, 0fffffh, DA_CR |DA_32|DA_4K
 GDT_DATA: DESCRIPTOR        0, 0fffffh, DA_DRW|DA_32|DA_4K
+GDT_STAK: DESCRIPTOR    STK_B,   STK_L, DA_DRWA|DA_32
 GDT_VIDO: DESCRIPTOR VGA_ADDR,  0ffffh, DA_DRW|DA_DPL3
 
 gdt_len  equ  $ - GDT_NONE
@@ -15,6 +16,7 @@ gdt_ptr  dw   gdt_len - 1
 
 sel_t  equ  GDT_TEXT - GDT_NONE
 sel_d  equ  GDT_DATA - GDT_NONE
+sel_s  equ  GDT_STAK - GDT_NONE
 sel_v  equ  GDT_VIDO - GDT_NONE + SA_RPL3
 
 START:

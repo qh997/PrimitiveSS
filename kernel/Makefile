@@ -19,7 +19,7 @@ KERNEL_MAP := $(OUT_DIR)/KERNEL.map
 INC_PATH := ../include
 INCLUDES := 
 
-NASM_FLAGS := -I $(INC_PATH)/ -f elf32 -o
+NASM_FLAGS := -I $(INC_PATH)/ -I ../boot/include/ -f elf32 -o
 GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
 LD_FLAGS := -s -m elf_i386 -Map $(KERNEL_MAP) \
             -Ttext `sed -n '/^KERNEL_OFFSET/s/^.* \([a-fA-F0-9]*\)h/0x\1/p' ../boot/include/defs.inc` \

@@ -21,8 +21,13 @@ KERNEL_BIN_SECTOR_NR  equ  20
 KERNEL_BIN_SIZE       equ  KERNEL_BIN_SECTOR_NR * 200h
 
 KERNEL_SEG            equ  00h
-KERNEL_OFFSET         equ  0400h
+KERNEL_OFFSET         equ  04000h
 KERNEL_ADDR           equ  KERNEL_SEG * 10h
+
+KERNEL_PDE_NR         equ  4h
+STK_B                 equ  01000h + 4 * KERNEL_PDE_NR
+STK_L                 equ  KERNEL_SEG + KERNEL_OFFSET - STK_B
+STK_TOP               equ  STK_L
 
 PHY_DISP_POS          equ  090000h
 PHY_MEM_SIZE          equ  PHY_DISP_POS + 04h
