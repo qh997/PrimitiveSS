@@ -70,7 +70,7 @@ GO:
         LOADER_FOUNT:
     pop    es
 
-    R_DISP_STR  0102h, msg_ready
+    R_DISP_STR  0000h + msg_boot_len + 1, msg_ready
 
     jmp    LOADER_SEG:LOADER_OFFSET
 
@@ -78,9 +78,9 @@ GO:
 
 msg_boot:            db   "Booting ..."
 msg_boot_len         equ  $ - msg_boot
-msg_ready:           db   "Ready"
+msg_ready:           db   "OK"
 msg_ready_len        equ  $ - msg_ready
-msg_loader_err:      db   "loader not found."
+msg_loader_err:      db   "Loader not found."
 msg_loader_err_len   equ  $ - msg_loader_err
 
 loader_mgic:    LOADER_MAGIC

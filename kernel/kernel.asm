@@ -12,6 +12,13 @@ _start:
     mov    eax, STK_TOP
     mov    esp, eax
 
+    mov    eax, cr0
+    or     eax, 80000000h
+    mov    cr0, eax
+    jmp    short .bgp
+    .bgp:
+        nop
+
     call   kernel_init
 
     mov    ah, 0Fh

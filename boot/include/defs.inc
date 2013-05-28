@@ -21,16 +21,19 @@ KERNEL_BIN_SECTOR_NR  equ  20
 KERNEL_BIN_SIZE       equ  KERNEL_BIN_SECTOR_NR * 200h
 
 KERNEL_SEG            equ  00h
-KERNEL_OFFSET         equ  04000h
+KERNEL_OFFSET         equ  06000h
 KERNEL_ADDR           equ  KERNEL_SEG * 10h
 
-KERNEL_PDE_NR         equ  4h
-STK_B                 equ  01000h + 4 * KERNEL_PDE_NR
+KERNEL_PDE_BASE       equ  00h
+KERNEL_PTE_BASE       equ  KERNEL_PDE_BASE + 01000h
+KERNEL_PTE_NR         equ  04h
+STK_B                 equ  KERNEL_PTE_BASE + 4096 * KERNEL_PTE_NR
 STK_L                 equ  KERNEL_SEG + KERNEL_OFFSET - STK_B
 STK_TOP               equ  STK_L
 
 PHY_DISP_POS          equ  090000h
-PHY_MEM_SIZE          equ  PHY_DISP_POS + 04h
+PHY_MEM_BASE          equ  PHY_DISP_POS + 04h
+PHY_MEM_SIZE          equ  PHY_MEM_BASE + 04h
 
 %define  LOADER_MAGIC  db  "81192"
 LOADER_MAGIC_NR  equ  5

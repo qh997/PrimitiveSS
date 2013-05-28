@@ -26,7 +26,7 @@ START:
     mov    ss, ax
     mov    sp, LOADER_OFFSET
 
-    R_DISP_STR  0300h, _msg_load_start
+    R_DISP_STR  0100h, _msg_load_start
 
     call   r_reset_floppy
 
@@ -36,8 +36,6 @@ START:
     push   KERNEL_BIN_OFFSET
     call   r_read_sector
     add    esp, 8
-
-    R_DISP_STR  0400h, _msg_get_mem
 
     mov    ebx, 0
     mov    di, _MemChkBuf
@@ -58,7 +56,7 @@ START:
 
     call   r_kill_motor
 
-    R_DISP_STR  0502h, _msg_load_ready
+    R_DISP_STR  0100h + _msg_load_start_len + 1, _msg_load_ready
 
     mov    ah, 03h
     xor    bh, bh
@@ -106,24 +104,25 @@ PM_START:
     mov    gs, ax
 
     _DISP_STR 03h, strPmStart
-    _DISP_ENTER
 
     _DISP_STR 08h, szMemChkTitle
-    call   DispMemInfo
+    call   disp_mem_info
+    _DISP_ENTER
 
+    call   setup_paging
+
+    _DISP_STR 08h, szDisKernel
     call   _dispose_kernel
 
     mov    eax, [dwDispPos]
     mov    dword [PHY_DISP_POS], eax
-    mov    eax, [dwMemSize]
-    mov    dword [PHY_MEM_SIZE], eax
 
     jmp    sel_t:(KERNEL_ADDR + KERNEL_OFFSET)
 
 %include "io_pm.inc"
 %include "elf.inc"
 
-DispMemInfo:
+disp_mem_info:
     push   esi
     push   edi
     push   ecx
@@ -151,10 +150,15 @@ DispMemInfo:
         cmp    eax, [dwMemSize]         ;         if (BaseAddrLow + LengthLow > MemSize)
         jb     .2                       ;
         mov    [dwMemSize], eax         ;             MemSize = BaseAddrLow + LengthLow;
+        push   eax
+        mov    eax, [dwBaseAddrLow]
+        mov    [PHY_MEM_BASE], eax
+        mov    eax, [dwLengthLow]
+        mov    dword [PHY_MEM_SIZE], eax
+        pop    eax
         .2:                             ;     }
             loop    .loop               ; }
 
-    _DISP_ENTER
     _DISP_STR  08h, szRAMSize
     _DISP_INT  0fh, dword [dwMemSize]
 
@@ -163,17 +167,52 @@ DispMemInfo:
     pop    esi
     ret
 
+setup_paging:
+    mov    ecx, 1024 * (1 + KERNEL_PTE_NR)
+    mov    edi, KERNEL_PDE_BASE
+    xor    eax, eax
+    .empty:
+        stosd
+        loop   .empty
+
+    mov    edi, KERNEL_PDE_BASE
+    mov    ecx, KERNEL_PTE_NR
+    xor    eax, eax
+    mov    eax, KERNEL_PTE_BASE | PGN
+    .k_pde:
+        stosd
+        add    eax, 4096
+        loop   .k_pde
+
+    mov    edi, KERNEL_PTE_BASE
+    mov    ecx, KERNEL_PTE_NR * 1024
+    xor    eax, eax
+    mov    eax, PGN
+    .k_pte:
+        stosd
+        add    eax, 4096
+        loop   .k_pte
+
+    mov    eax, KERNEL_PDE_BASE
+    mov    cr3, eax
+    mov    eax, cr0
+    or     eax, 80000000h
+    mov    cr0, eax
+    jmp    short .bgp
+    .bgp:
+        nop
+    ret
+
 DATA1:
-    _msg_load_start:     db   "Loading kernrl ..."
+    _msg_load_start:     db   "Loading ..."
     _msg_load_start_len  equ  $ - _msg_load_start
-    _msg_get_mem:        db   "Get memory info ..."
-    _msg_get_mem_len     equ  $ - _msg_get_mem
-    _msg_load_ready:     db   "ready"
+    _msg_load_ready:     db   "OK"
     _msg_load_ready_len  equ  $ - _msg_load_ready
 
-    _strPmStart:      db  CHAR_ENTER, CHAR_ENTER, "Entering Protect Mode", CHAR_ENTER, 0
+    _strPmStart:      db  CHAR_ENTER, "Entering Protect Mode", CHAR_ENTER, 0
     _szMemChkTitle:   db  " BaseAddrL  BaseAddrH    LengthL    LengthH       Type", 0Ah, 0
     _szRAMSize:       db  "RAM size: ", 0
+    _szDisKernel:     db  "Dispose kernel ...", CHAR_ENTER, 0
     _szReturn:        db  CHAR_ENTER, 0
     _szSpace:         db  " ", 0
     _dwDispPos:       dd  0
@@ -190,6 +229,7 @@ DATA1:
     strPmStart       equ  LOADER_ADDR + _strPmStart
     szMemChkTitle    equ  LOADER_ADDR + _szMemChkTitle
     szRAMSize        equ  LOADER_ADDR + _szRAMSize
+    szDisKernel      equ  LOADER_ADDR + _szDisKernel
     szReturn         equ  LOADER_ADDR + _szReturn
     szSpace          equ  LOADER_ADDR + _szSpace
     dwDispPos        equ  LOADER_ADDR + _dwDispPos
