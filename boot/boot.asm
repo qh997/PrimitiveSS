@@ -1,4 +1,4 @@
-%include "defs.inc"
+%include "boot/defs.inc"
 
 org    BOOT_ADDR + BOOT_OFFSET
 jmp    short START
@@ -74,7 +74,7 @@ GO:
 
     jmp    LOADER_SEG:LOADER_OFFSET
 
-%include "io_rm.inc"
+%include "boot/io_rm.inc"
 
 msg_boot:            db   "Booting ..."
 msg_boot_len         equ  $ - msg_boot

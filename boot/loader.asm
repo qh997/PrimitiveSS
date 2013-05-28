@@ -1,5 +1,5 @@
-%include "defs.inc"
-%include "protect.inc"
+%include "boot/defs.inc"
+%include "boot/protect.inc"
 
 org    LOADER_OFFSET
 jmp    START
@@ -88,7 +88,7 @@ START:
 
     jmp    dword sel_t:(LOADER_ADDR + PM_START)
 
-%include "io_rm.inc"
+%include "boot/io_rm.inc"
 
 ALIGN 32
 [BITS 32]
@@ -119,8 +119,8 @@ PM_START:
 
     jmp    sel_t:(KERNEL_ADDR + KERNEL_OFFSET)
 
-%include "io_pm.inc"
-%include "elf.inc"
+%include "boot/io_pm.inc"
+%include "boot/elf.inc"
 
 disp_mem_info:
     push   esi

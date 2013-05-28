@@ -19,10 +19,10 @@ KERNEL_MAP := $(OUT_DIR)/KERNEL.map
 INC_PATH := ../include
 INCLUDES := 
 
-NASM_FLAGS := -I $(INC_PATH)/ -I ../boot/include/ -f elf32 -o
+NASM_FLAGS := -I $(INC_PATH)/boot/ -f elf32 -o
 GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
 LD_FLAGS := -s -m elf_i386 -Map $(KERNEL_MAP) \
-            -Ttext `sed -n '/^KERNEL_OFFSET/s/^.* \([a-fA-F0-9]*\)h/0x\1/p' ../boot/include/defs.inc` \
+            -Ttext `sed -n '/^KERNEL_OFFSET/s/^.* \([a-fA-F0-9]*\)h/0x\1/p' $(INC_PATH)/boot/defs.inc` \
             -o
 
 KERNEL_OBJS += $(OUT_DIR)/kernel.o
@@ -50,9 +50,11 @@ install: install_kernel
 install_kernel: $(KERNEL_BIN)
 	@$(SHOW_INSTALL) $< $(TREAT_PATH)
 	dd if=$^ of=$(BOOT_IMG) bs=1 \
-	    count=`ls -l $^ | awk -F " " '{print $$5}'` \
-	    seek=`echo "obase=10;ibase=16;(\`sed -n '/^LOADER_SECTOR/s/^.* \([a-fA-F0-9]*\)/\1/p' ../boot/include/defs.inc\` + 1) * 200" | bc` \
-	    conv=notrunc $(SILENCE)
+        count=`ls -l $^ | awk -F " " '{print $$5}'` \
+        seek=`echo "obase=10;ibase=16; \
+                 (\`sed -n '/^LOADER_SECTOR/s/^.* \([a-fA-F0-9]*\)/\1/p' \
+                 $(INC_PATH)/boot/defs.inc\` + 1) * 200" | bc` \
+        conv=notrunc $(SILENCE)
 
 $(KERNEL_BIN): $(KERNEL_OBJS)
 	@$(SHOW_LNK_OBJ) $@ $(TREAT_PATH)

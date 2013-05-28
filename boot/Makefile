@@ -13,11 +13,11 @@ ROOT_DIR := ..
 OUT_DIR  := $(ROOT_DIR)/out/boot
 BOOT_IMG := $(ROOT_DIR)/boot.img
 
-INC_PATH := ./include
-INCLUDES := $(INC_PATH)/defs.inc
-INCLUDES += $(INC_PATH)/io_rm.inc
-INCLUDES += $(INC_PATH)/protect.inc
-INCLUDES += $(INC_PATH)/elf.inc
+INC_PATH := ../include
+INCLUDES := $(INC_PATH)/boot/defs.inc
+INCLUDES += $(INC_PATH)/boot/io_rm.inc
+INCLUDES += $(INC_PATH)/boot/protect.inc
+INCLUDES += $(INC_PATH)/boot/elf.inc
 
 BOOT_BIN   := $(OUT_DIR)/boot.bin
 LOADER_BIN := $(OUT_DIR)/loader.bin
@@ -51,8 +51,9 @@ $(BOOT_BIN): boot.asm $(INCLUDES)
 
 install_loader: $(LOADER_BIN)
 	$(SHOW_INSTALL) $< $(TREAT_PATH)
-	@dd if=$^ of=$(BOOT_IMG) seek=512 bs=1 count=`ls -l $(LOADER_BIN) | awk -F " " '{print $$5}'` \
-	    conv=notrunc $(SILENCE)
+	@dd if=$^ of=$(BOOT_IMG) seek=512 bs=1 \
+        count=`ls -l $(LOADER_BIN) | awk -F " " '{print $$5}'` \
+        conv=notrunc $(SILENCE)
 
 $(LOADER_BIN): loader.asm $(INCLUDES)
 	$(SHOW_CPL_ASM) $@ $(TREAT_PATH)
