@@ -4,4 +4,5 @@ bochsrc
 *.o
 *.bin
 *.map
+objs
 out/

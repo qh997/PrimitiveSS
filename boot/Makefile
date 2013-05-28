@@ -6,11 +6,11 @@ AR   := ar
 
 SHOW_CPL_ASM := @echo -n ' COMPILE   ASM    '; echo echo
 SHOW_INSTALL := @echo -n ' INSTALL          '; echo echo
-TREAT_PATH   := | sed 's/.*out\///'
+TREAT_PATH  := | sed 's/.*\///'
 SILENCE      := > /dev/null 2>&1
 
 ROOT_DIR := ..
-OUT_DIR  := $(ROOT_DIR)/out/boot
+OUT_DIR  := $(ROOT_DIR)/out
 BOOT_IMG := $(ROOT_DIR)/boot.img
 
 INC_PATH := ../include
@@ -33,11 +33,11 @@ all: everything install
 new: clean all
 
 init:
-	@mkdir -p $(OUT_DIR)
 
 clean:
 	@echo '  clean boot ...'
-	@rm -rf $(OUT_DIR)
+	@rm -f $(BOOT_BIN)
+	@rm -f $(LOADER_BIN)
 
 install: install_boot install_loader
 
