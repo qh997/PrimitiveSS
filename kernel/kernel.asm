@@ -5,6 +5,8 @@ extern  init
 
 ; Global variables
 extern  disp_pos
+extern  mem_base
+extern  mem_size
 extern  gdtr
 extern  idtr
 
@@ -19,10 +21,16 @@ _start:
 
     mov    eax, [PHY_DISP_POS]
     mov    [disp_pos], eax
+    mov    eax, [PHY_MEM_BASE]
+    mov    [mem_base], eax
+    mov    eax, [PHY_MEM_SIZE]
+    mov    [mem_size], eax
 
     sgdt   [gdtr]
     call   init
     lgdt   [gdtr]
+
+    lidt   [idtr]
 
     jmp    8:new_gdtr
 
