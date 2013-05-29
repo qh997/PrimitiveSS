@@ -17,9 +17,11 @@ OBJS_OUT   := $(ROOT_DIR)/objs
 INC_PATH := ../include
 INCLUDES := 
 
-NASM_FLAGS := -I $(INC_PATH)/boot/ -f elf32 -o
+NASM_FLAGS := -I $(INC_PATH)/ -f elf32 -o
+GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
 
 OBJS += $(OUT_DIR)/lib_a.o
+OBJS += $(OUT_DIR)/lib.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
 
@@ -42,3 +44,7 @@ clean:
 $(OUT_DIR)/lib_a.o: lib_a.asm
 	@$(SHOW_CPL_ASM) $@ $(TREAT_PATH)
 	@$(AS) $(NASM_FLAGS) $@ $<
+
+$(OUT_DIR)/lib.o: lib.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<

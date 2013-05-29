@@ -27,6 +27,7 @@ KERNEL_ADDR           equ  KERNEL_SEG * 10h
 KERNEL_PDE_BASE       equ  00h
 KERNEL_PTE_BASE       equ  KERNEL_PDE_BASE + 01000h
 KERNEL_PTE_NR         equ  04h
+KERNEL_SIZE_MAX       equ  01000h * KERNEL_PTE_NR ; unit: 4KB
 STK_B                 equ  KERNEL_PTE_BASE + 4096 * KERNEL_PTE_NR
 STK_L                 equ  KERNEL_SEG + KERNEL_OFFSET - STK_B
 STK_TOP               equ  STK_L
