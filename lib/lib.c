@@ -34,3 +34,26 @@ void *memset(void *d, u8 ch, size_t n)
 
     return ret;
 }
+
+void out_b(u16 port, u8 val)
+{
+    __asm__(
+        "out %%al, %%dx\n\t"
+        "nop\n\tnop"
+        :
+        :"a"(val),"d"(port)
+    );
+}
+
+u8 in_b(u16 port)
+{
+    u8 val;
+    __asm__(
+        "in %%dx, %%al\n\t"
+        "nop\n\tnop"
+        :"=a"(val)
+        :"d"(port)
+    );
+
+    return val;
+}

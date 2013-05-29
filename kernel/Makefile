@@ -22,6 +22,7 @@ GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
 OBJS += $(OUT_DIR)/kernel.o
 OBJS += $(OUT_DIR)/init.o
 OBJS += $(OUT_DIR)/global.o
+OBJS += $(OUT_DIR)/interrupts.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
 
@@ -52,5 +53,9 @@ $(OUT_DIR)/init.o: init.c
 	@$(CC) $(GCC_FLAGS) $@ $<
 
 $(OUT_DIR)/global.o: global.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/interrupts.o: interrupts.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<

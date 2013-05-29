@@ -1,7 +1,7 @@
 #include "sys/global.h"
 #include "sys/proto.h"
 #include "string.h"
-
+#include "sys/interrupts.h"
 
 void init()
 {
@@ -15,6 +15,8 @@ void init()
     memset(idt, 0x0, NR_IDT * sizeof(struct desc_gate));
     *(u16 *)(&idt[0]) = NR_IDT * sizeof(struct desc_gate) - 1;
     *(u32 *)(&idt[2]) = (u32)&idt;
+
+    init_8259A();
 
     early_printk("OK\n");
 }
