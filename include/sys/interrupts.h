@@ -15,7 +15,7 @@ typedef void (*irq_handler)(int irq);
 
 extern irq_handler irq_table[];
 
-void init_8259A();
+void init_interrupt();
 void disable_irq(int irq);
 void enable_irq(int irq);
 

@@ -1,9 +1,12 @@
 #include "sys/proto.h"
 #include "sys/interrupts.h"
+#include "stdio.h"
 
 irq_handler irq_table[NR_IRQS];
 
-void init_8259A()
+void spurious_irq(int irq);
+
+void init_interrupt()
 {
     out_b(INT_M_CTL, 0x11);                // 主8259, ICW1
     out_b(INT_S_CTL, 0x11);                // 从8259, ICW1
@@ -15,10 +18,20 @@ void init_8259A()
     out_b(INT_S_CTLMASK, 0x01);            // 从8259, ICW4
     out_b(INT_M_CTLMASK, 0xFF);            // 主8259, OCW1
     out_b(INT_S_CTLMASK, 0xFF);            // 从8259, OCW1
+
+    for (int i = 0; i < NR_IRQS; i++)
+        irq_table[i] = spurious_irq;
 }
 
 void register_irq_handler(int irq, irq_handler handler)
 {
     disable_irq(irq);
     irq_table[irq] = handler;
+}
+
+void spurious_irq(int irq)
+{
+    early_printk("spurious_irq: ");
+    //early_printk(irq);
+    early_printk("\n");
 }

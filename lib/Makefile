@@ -22,6 +22,9 @@ GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
 
 OBJS += $(OUT_DIR)/lib_a.o
 OBJS += $(OUT_DIR)/lib.o
+OBJS += $(OUT_DIR)/printf.o
+OBJS += $(OUT_DIR)/vsprintf.o
+OBJS += $(OUT_DIR)/string.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
 
@@ -46,5 +49,17 @@ $(OUT_DIR)/lib_a.o: lib_a.asm
 	@$(AS) $(NASM_FLAGS) $@ $<
 
 $(OUT_DIR)/lib.o: lib.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/printf.o: printf.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/vsprintf.o: vsprintf.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/string.o: string.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<
