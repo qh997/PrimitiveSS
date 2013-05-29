@@ -15,6 +15,8 @@
 #define SEL_V ((INDEX_VIDEO << 3) + 3)
 #define SEL_1  (INDEX_LDT   << 3)
 
+#define V_MEM_BASE    0xB8000
+
 #define KERNEL_PTE_NR 0x4
 #define PROC_LNSPACE 4 // in MB
 #define NR_GDT (4 + 2 * (1024 - KERNEL_PTE_NR) / PROC_LNSPACE)

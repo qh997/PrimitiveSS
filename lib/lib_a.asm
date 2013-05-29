@@ -3,45 +3,7 @@ CHAR_ENTER  equ  0ah
 extern  disp_pos
 
 [section .text]
-global  disp_str
-
-disp_str:
-    push   ebp
-    mov    ebp, esp
-
-    mov    esi, [ebp + 8]
-    mov    edi, [disp_pos]
-    mov    ah, 0eh
-    cld
-    .start:
-        lodsb
-        test   al, al
-        jz     .end
-        cmp    al, CHAR_ENTER
-        jz     .enter
-        mov    [gs:edi], ax
-        add    edi, 2
-        jmp    .start
-
-        .enter:
-            push   eax
-            mov    eax, edi
-            mov    bl, 80 * 2
-            div    bl
-            and    eax, 0ffh
-            inc    eax
-            mov    bl, 160
-            mul    bl
-            mov    edi, eax
-            pop    eax
-            jmp    .start
-
-        .end:
-    mov    [disp_pos], edi
-    call   update_cursor
-
-    pop    ebp
-    ret
+global  update_cursor
 
 update_cursor:
     push   ebx

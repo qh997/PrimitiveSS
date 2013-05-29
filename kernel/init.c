@@ -5,7 +5,7 @@
 
 void init()
 {
-    disp_str("kernel init.\n");
+    early_printk("kernel init ... ");
 
     memset(gdt, 0x0, NR_GDT * sizeof(struct desc_seg));
     memcpy((void *)&gdt, (void *)(*(u32 *)&gdtr[2]), *(u16 *)(&gdtr[0]) + 1);
@@ -15,4 +15,6 @@ void init()
     memset(idt, 0x0, NR_IDT * sizeof(struct desc_gate));
     *(u16 *)(&idt[0]) = NR_IDT * sizeof(struct desc_gate) - 1;
     *(u32 *)(&idt[2]) = (u32)&idt;
+
+    early_printk("OK\n");
 }
