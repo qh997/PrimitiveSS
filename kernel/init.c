@@ -3,10 +3,11 @@
 #include "string.h"
 #include "sys/interrupts.h"
 #include "stdio.h"
+#include "sys/protect.h"
 
 void init()
 {
-    early_printk("kernel init ... \n");
+    disp_str("kernel init ... ");
 
     memset(gdt, 0x0, NR_GDT * sizeof(struct desc_seg));
     memcpy((void *)&gdt, (void *)(*(u32 *)&gdtr[2]), *(u16 *)(&gdtr[0]) + 1);
@@ -17,7 +18,8 @@ void init()
     *(u16 *)(&idtr[0]) = NR_IDT * sizeof(struct desc_gate) - 1;
     *(u32 *)(&idtr[2]) = (u32)&idt;
 
-    init_interrupt();
+    init_interrupts();
+    init_protect();
 
-    early_printk("idtr = %ssss", "asdf123");
+    disp_str("OK\n");
 }

@@ -1,7 +1,9 @@
 #ifndef __TYPE_H__
 #define __TYPE_H__
 
-#define NULL (0)
+#define TRUE  1
+#define FALSE 0
+#define NULL  0
 
 typedef unsigned long long u64;
 typedef unsigned int       u32;

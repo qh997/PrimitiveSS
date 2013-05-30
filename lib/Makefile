@@ -18,7 +18,7 @@ INC_PATH := ../include
 INCLUDES := 
 
 NASM_FLAGS := -I $(INC_PATH)/ -f elf32 -o
-GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
+GCC_FLAGS := -I $(INC_PATH)/ -c -m32 -std=c99 -fno-builtin -nostdlib -Wall -o
 
 OBJS += $(OUT_DIR)/lib_a.o
 OBJS += $(OUT_DIR)/lib.o

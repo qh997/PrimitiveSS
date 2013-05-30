@@ -6,7 +6,7 @@ irq_handler irq_table[NR_IRQS];
 
 void spurious_irq(int irq);
 
-void init_interrupt()
+void init_interrupts()
 {
     out_b(INT_M_CTL, 0x11);                // 主8259, ICW1
     out_b(INT_S_CTL, 0x11);                // 从8259, ICW1
@@ -31,7 +31,7 @@ void register_irq_handler(int irq, irq_handler handler)
 
 void spurious_irq(int irq)
 {
-    early_printk("spurious_irq: ");
-    //early_printk(irq);
+    disp_str("spurious_irq: ");
+    disp_int(irq);
     early_printk("\n");
 }

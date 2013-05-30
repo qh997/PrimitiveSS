@@ -3,6 +3,7 @@
 #include "sys/proto.h"
 #include "types.h"
 #include "stdio.h"
+#include "string.h"
 
 void disp_str(char *s)
 {
@@ -19,7 +20,14 @@ void disp_str(char *s)
     update_cursor();
 }
 
-int early_printk(char *fmt, ...)
+void disp_int(int n)
+{
+    char buf[STR_DEFAULT_LEN];
+    itoa(buf, n, 16);
+    disp_str(buf);
+}
+
+int early_printk(const char *fmt, ...)
 {
     int i;
     char buf[STR_DEFAULT_LEN];

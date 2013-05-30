@@ -17,12 +17,13 @@ INC_PATH := ../include
 INCLUDES := 
 
 NASM_FLAGS := -I $(INC_PATH)/ -f elf32 -o
-GCC_FLAGS := -I $(INC_PATH)/ -m32 -c -std=c99 -fno-builtin -nostdlib -Wall -o
+GCC_FLAGS := -I $(INC_PATH)/ -c -m32 -std=c99 -fno-builtin -nostdlib -Wall -o
 
 OBJS += $(OUT_DIR)/kernel.o
 OBJS += $(OUT_DIR)/init.o
 OBJS += $(OUT_DIR)/global.o
 OBJS += $(OUT_DIR)/interrupts.o
+OBJS += $(OUT_DIR)/protect.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
 
@@ -57,5 +58,9 @@ $(OUT_DIR)/global.o: global.c
 	@$(CC) $(GCC_FLAGS) $@ $<
 
 $(OUT_DIR)/interrupts.o: interrupts.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/protect.o: protect.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<
