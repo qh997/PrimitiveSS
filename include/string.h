@@ -8,6 +8,6 @@ void *memset(void *d, u8 ch, size_t n);
 char *strcpy(char *d, char *s);
 int strlen(char *d);
 
-char *itoa(char *buf, int val, int base);
+char *uitoa(char *buf, unsigned int val, int base);
 
 #endif

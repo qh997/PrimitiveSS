@@ -13,7 +13,6 @@ extern  idtr
 
 [section .text]
 global _start
-global exception
 
 _start:
     mov    eax, 018h
@@ -37,11 +36,4 @@ _start:
     jmp    8:new_gdtr
 
 new_gdtr:
-    ud2
     jmp    $
-
-exception:
-    add    esp, 4
-    call   exception_handler
-    add    esp, 4 * 2
-    hlt

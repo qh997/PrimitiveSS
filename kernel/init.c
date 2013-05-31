@@ -21,5 +21,5 @@ void init()
     init_interrupts();
     init_protect();
 
-    disp_str("OK\n");
+    early_printk("OK\n");
 }

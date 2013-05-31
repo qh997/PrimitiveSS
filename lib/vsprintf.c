@@ -2,13 +2,19 @@
 #include "string.h"
 #include "stdio.h"
 
-char *itoa(char *buf, int val, int base)
+char *uitoa(char *buf, unsigned int val, int base)
 {
     char *p = buf;
     int rem = val % base;
     int quo = val / base;
 
-    char tmp[32];
+    if (0 == val) {
+        *p++ = '0';
+        *p++ = 0;
+        return buf;
+    }
+
+    char tmp[64];
     char *t = tmp;
     while (rem || quo) {
         char dig = rem > 9 ? 'A' + rem - 10 : '0' + rem;
@@ -41,7 +47,7 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 
         switch (*fmt) {
             case 'x':
-                itoa(tmp, *((int *)p_next_arg), 16);
+                uitoa(tmp, *((int *)p_next_arg), 16);
                 strcpy(p, tmp);
                 p_next_arg += 4;
                 p += strlen(tmp);
@@ -52,6 +58,8 @@ int vsprintf(char *buf, const char *fmt, va_list args)
                 break;
         }
     }
+
+    *p = 0;
 
     return (p - buf);
 }

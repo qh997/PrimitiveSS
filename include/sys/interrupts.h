@@ -30,7 +30,7 @@
 #define NR_IRQS 16
 
 typedef void (*irq_handler)(int irq);
-typedef void (*int_handler)();
+typedef void (*int_handler)(int t, ...);
 
 extern irq_handler irq_table[];
 

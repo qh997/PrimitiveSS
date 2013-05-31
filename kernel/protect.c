@@ -4,28 +4,74 @@
 #include "types.h"
 #include "stdio.h"
 
-void exception(int, int);
+char *exception_msg[] = {
+    "#DE Divide Error",
+    "#DB RESERVED",
+    "--  NMI Interrupt",
+    "#BP Breakpoint",
+    "#OF Overflow",
+    "#BR BOUND Range Exceeded",
+    "#UD Invalid Opcode (Undefined Opcode)",
+    "#NM Device Not Available (No Math Coprocessor)",
+    "#DF Double Fault",
+    "    Coprocessor Segment Overrun (reserved)",
+    "#TS Invalid TSS",
+    "#NP Segment Not Present",
+    "#SS Stack-Segment Fault",
+    "#GP General Protection",
+    "#PF Page Fault",
+    "--  (Intel reserved. Do not use.)",
+    "#MF x87 FPU Floating-Point Error (Math Fault)",
+    "#AC Alignment Check",
+    "#MC Machine Check",
+    "#XF SIMD Floating-Point Exception"
+};
+
 static void init_idt_desc(unsigned char vector, u8 desc_type, int_handler handler, unsigned char privilege);
 
-#define INT_HANDLER(vector, name, code) \
-    void name() { if (!code) exception(vector, 0xFFFFFFFF); }
+#define EXCEPTION_HANDLER(vector, name, code) \
+    void name(int t, ...) { \
+        va_list arg = (va_list)((int *)&t - 1); \
+        if (!code) { \
+            disp_str("Exception! --> "); \
+            disp_str(exception_msg[vector]); \
+            early_printk( \
+                "\n\nEFLAGS:%x CS:%x EIP:%x\n", \
+                *((int *)arg + 2), \
+                *((int *)arg + 1), \
+                *((int *)arg + 0) \
+            ); \
+        } \
+        else { \
+            disp_str("Exception! --> "); \
+            disp_str(exception_msg[vector]); \
+            early_printk( \
+                "\n\nEFLAGS: %x CS: %x EIP: %x ERR: %x\n", \
+                *((int *)arg + 3), \
+                *((int *)arg + 2), \
+                *((int *)arg + 1), \
+                *((int *)arg + 0) \
+            ); \
+        }\
+        while (1) ; \
+    }
 
-INT_HANDLER(INT_VECTOR_DIVIDE,       divide_error,          FALSE);
-INT_HANDLER(INT_VECTOR_DEBUG,        single_step_exception, FALSE);
-INT_HANDLER(INT_VECTOR_NMI,          nmi,                   FALSE);
-INT_HANDLER(INT_VECTOR_BREAKPOINT,   breakpoint_exception,  FALSE);
-INT_HANDLER(INT_VECTOR_OVERFLOW,     overflow,              FALSE);
-INT_HANDLER(INT_VECTOR_BOUNDS,       bounds_check,          FALSE);
-INT_HANDLER(INT_VECTOR_INVAL_OP,     inval_opcode,          FALSE);
-INT_HANDLER(INT_VECTOR_COPROC_NOT,   copr_not_available,    FALSE);
-INT_HANDLER(INT_VECTOR_DOUBLE_FAULT, double_fault,          TRUE );
-INT_HANDLER(INT_VECTOR_COPROC_SEG,   copr_seg_overrun,      FALSE);
-INT_HANDLER(INT_VECTOR_INVAL_TSS,    inval_tss,             TRUE );
-INT_HANDLER(INT_VECTOR_SEG_NOT,      segment_not_present,   TRUE );
-INT_HANDLER(INT_VECTOR_STACK_FAULT,  stack_exception,       TRUE );
-INT_HANDLER(INT_VECTOR_PROTECTION,   general_protection,    TRUE );
-INT_HANDLER(INT_VECTOR_PAGE_FAULT,   page_fault,            TRUE );
-INT_HANDLER(INT_VECTOR_COPROC_ERR,   copr_error,            FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_DIVIDE,       divide_error,          FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_DEBUG,        single_step_exception, FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_NMI,          nmi,                   FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_BREAKPOINT,   breakpoint_exception,  FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_OVERFLOW,     overflow,              FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_BOUNDS,       bounds_check,          FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_INVAL_OP,     inval_opcode,          FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_COPROC_NOT,   copr_not_available,    FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_DOUBLE_FAULT, double_fault,          TRUE );
+EXCEPTION_HANDLER(INT_VECTOR_COPROC_SEG,   copr_seg_overrun,      FALSE);
+EXCEPTION_HANDLER(INT_VECTOR_INVAL_TSS,    inval_tss,             TRUE );
+EXCEPTION_HANDLER(INT_VECTOR_SEG_NOT,      segment_not_present,   TRUE );
+EXCEPTION_HANDLER(INT_VECTOR_STACK_FAULT,  stack_exception,       TRUE );
+EXCEPTION_HANDLER(INT_VECTOR_PROTECTION,   general_protection,    TRUE );
+EXCEPTION_HANDLER(INT_VECTOR_PAGE_FAULT,   page_fault,            TRUE );
+EXCEPTION_HANDLER(INT_VECTOR_COPROC_ERR,   copr_error,            FALSE);
 
 void init_protect()
 {
@@ -55,50 +101,6 @@ void init_desc(struct desc_seg *p_desc, u32 base, u32 limit, u16 attribute)
     p_desc->type_0         = attribute & 0xFF;
     p_desc->limit_1_type_1 = ((limit>>16) & 0x0F) | ((attribute>>8) & 0xF0);
     p_desc->base_2         = (base >> 24) & 0xFF;
-}
-
-void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
-{
-    char *err_msg[] = {
-        "#DE Divide Error",
-        "#DB RESERVED",
-        "--  NMI Interrupt",
-        "#BP Breakpoint",
-        "#OF Overflow",
-        "#BR BOUND Range Exceeded",
-        "#UD Invalid Opcode (Undefined Opcode)",
-        "#NM Device Not Available (No Math Coprocessor)",
-        "#DF Double Fault",
-        "    Coprocessor Segment Overrun (reserved)",
-        "#TS Invalid TSS",
-        "#NP Segment Not Present",
-        "#SS Stack-Segment Fault",
-        "#GP General Protection",
-        "#PF Page Fault",
-        "--  (Intel reserved. Do not use.)",
-        "#MF x87 FPU Floating-Point Error (Math Fault)",
-        "#AC Alignment Check",
-        "#MC Machine Check",
-        "#XF SIMD Floating-Point Exception"
-    };
-
-    disp_int((int)err_msg[0]);
-    disp_str("\n\n");
-    disp_str("Exception! --> ");
-    disp_str(err_msg[vec_no]);
-    disp_str("\n\n");
-    disp_str("EFLAGS:");
-    disp_int(eflags);
-    disp_str("CS:");
-    disp_int(cs);
-    disp_str("EIP:");
-    disp_int(eip);
-
-    if (err_code != 0xFFFFFFFF) {
-        disp_str("Error code:");
-        disp_int(err_code);
-    }
-    while (1);
 }
 
 static void init_idt_desc(unsigned char vector, u8 desc_type, int_handler handler, unsigned char privilege)

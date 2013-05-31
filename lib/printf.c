@@ -23,7 +23,7 @@ void disp_str(char *s)
 void disp_int(int n)
 {
     char buf[STR_DEFAULT_LEN];
-    itoa(buf, n, 16);
+    uitoa(buf, n, 16);
     disp_str(buf);
 }
 
@@ -31,7 +31,6 @@ int early_printk(const char *fmt, ...)
 {
     int i;
     char buf[STR_DEFAULT_LEN];
-
     va_list arg = (va_list)((char *)(&fmt) + 4);
     i = vsprintf(buf, fmt, arg);
     disp_str(buf);
