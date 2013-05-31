@@ -31,7 +31,7 @@ int early_printk(const char *fmt, ...)
 {
     int i;
     char buf[STR_DEFAULT_LEN];
-    va_list arg = (va_list)((char *)(&fmt) + 4);
+    va_list arg = (va_list)((void **)&fmt + 1);
     i = vsprintf(buf, fmt, arg);
     disp_str(buf);
 

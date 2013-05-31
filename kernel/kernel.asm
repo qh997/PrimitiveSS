@@ -36,4 +36,5 @@ _start:
     jmp    8:new_gdtr
 
 new_gdtr:
+    jmp    0fffffffh
     jmp    $
