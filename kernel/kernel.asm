@@ -36,4 +36,5 @@ _start:
     jmp    SEL_T:new_gdtr
 
 new_gdtr:
+    int    80h
     jmp    $
