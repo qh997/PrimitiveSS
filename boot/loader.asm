@@ -1,5 +1,6 @@
-%include "boot/defs.inc"
+
 %include "boot/protect.inc"
+%include "boot/defs.inc"
 
 org    LOADER_OFFSET
 jmp    START
@@ -13,11 +14,6 @@ GDT_VIDO: DESCRIPTOR VGA_ADDR,          0ffffh, DA_DRW|DA_DPL3
 gdt_len  equ  $ - GDT_NONE
 gdt_ptr  dw   gdt_len - 1
          dd   LOADER_ADDR + GDT_NONE
-
-sel_t  equ  GDT_TEXT - GDT_NONE
-sel_d  equ  GDT_DATA - GDT_NONE
-sel_s  equ  GDT_STAK - GDT_NONE
-sel_v  equ  GDT_VIDO - GDT_NONE + SA_RPL3
 
 START:
     mov    ax, cs
@@ -86,7 +82,7 @@ START:
     or     eax, 1
     mov    cr0, eax
 
-    jmp    dword sel_t:(LOADER_ADDR + PM_START)
+    jmp    dword SEL_T:(LOADER_ADDR + PM_START)
 
 %include "boot/io_rm.inc"
 
@@ -94,13 +90,13 @@ ALIGN 32
 [BITS 32]
 
 PM_START:
-    mov    ax, sel_d
+    mov    ax, SEL_D
     mov    ds, ax
     mov    es, ax
     mov    fs, ax
     mov    ss, ax
     mov    esp, LOADER_ADDR + LOADER_OFFSET
-    mov    ax, sel_v
+    mov    ax, SEL_V
     mov    gs, ax
 
     _DISP_STR 03h, strPmStart
@@ -117,7 +113,7 @@ PM_START:
     mov    eax, [dwDispPos]
     mov    dword [PHY_DISP_POS], eax
 
-    jmp    sel_t:(KERNEL_ADDR + KERNEL_OFFSET)
+    jmp    SEL_T:(KERNEL_ADDR + KERNEL_OFFSET)
 
 %include "boot/io_pm.inc"
 %include "boot/elf.inc"

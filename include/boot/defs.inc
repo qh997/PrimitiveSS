@@ -36,6 +36,12 @@ PHY_DISP_POS          equ  090000h
 PHY_MEM_BASE          equ  PHY_DISP_POS + 04h
 PHY_MEM_SIZE          equ  PHY_MEM_BASE + 04h
 
+SEL_0  equ  00h
+SEL_T  equ  08h
+SEL_D  equ  10h
+SEL_S  equ  18h
+SEL_V  equ  20h + 3
+
 %define  LOADER_MAGIC  db  "81192"
 LOADER_MAGIC_NR  equ  5
 
