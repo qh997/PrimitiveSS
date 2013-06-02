@@ -1,4 +1,3 @@
-MAKE := make
 AS   := nasm
 CC   := gcc
 LD   := ld
@@ -28,7 +27,7 @@ OBJS += $(OUT_DIR)/traps.o
 OBJS += $(OUT_DIR)/clock.o
 OBJS += $(OUT_DIR)/main.o
 
-OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
+OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
 .PHONY: everything all new init clean
 
@@ -48,34 +47,10 @@ clean:
 
 install: install_kernel
 
-$(OUT_DIR)/kernel.o: kernel.asm
+$(OUT_DIR)/%.o: %.asm
 	@$(SHOW_CPL_ASM) $@ $(TREAT_PATH)
 	@$(AS) $(NASM_FLAGS) $@ $<
 
-$(OUT_DIR)/init.o: init.c
-	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
-
-$(OUT_DIR)/global.o: global.c
-	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
-
-$(OUT_DIR)/PIC8259A.o: PIC8259A.c
-	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
-
-$(OUT_DIR)/protect.o: protect.c
-	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
-
-$(OUT_DIR)/traps.o: traps.c
-	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
-
-$(OUT_DIR)/clock.o: clock.c
-	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
-
-$(OUT_DIR)/main.o: main.c
+$(OUT_DIR)/%.o: %.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<
