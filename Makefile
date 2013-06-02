@@ -65,6 +65,10 @@ install: $(KERNEL_BIN)
         conv=notrunc $(SILENCE)
 	@echo
 
+dep:
+	@$(MAKE_SUB) $(KERNEL_DIR) $@
+	@$(MAKE_SUB) $(LIB_DIR) $@
+
 boot:
 	@$(MAKE_SUB) $(BOOT_DIR)
 

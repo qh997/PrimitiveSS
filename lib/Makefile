@@ -15,8 +15,8 @@ OBJS_OUT   := $(ROOT_DIR)/objs
 INC_PATH := ../include
 INCLUDES := 
 
-NASM_FLAGS := -I $(INC_PATH)/ -f elf32 -o
-GCC_FLAGS := -I $(INC_PATH)/ -c -m32 -std=c99 -fno-builtin -nostdlib -Wall -fomit-frame-pointer -o
+NASM_FLAGS := -I $(INC_PATH)/ -f elf32
+GCC_FLAGS := -I $(INC_PATH)/ -c -m32 -std=c99 -fno-builtin -nostdlib -Wall -fomit-frame-pointer
 
 OBJS += $(OUT_DIR)/lib_a.o
 OBJS += $(OUT_DIR)/lib.o
@@ -42,10 +42,30 @@ clean:
 	@echo '  clean lib ...'
 	@rm -rf $(OUT_DIR)
 
+dep:
+	@sed '/^### Dependencies ###$$/q' < Makefile > tmp_Makefile
+	@(for tfile in $(OBJS); do \
+	      sfile=`echo $${tfile##*$(OUT_DIR)/} | sed "s/\.o/.c/"`; \
+	      [ -f $${sfile} ] || continue; \
+	      $(CC) $(GCC_FLAGS) -MM -MT $${tfile} $${sfile}; \
+	  done) >> tmp_Makefile
+	@mv tmp_Makefile Makefile
+
 $(OUT_DIR)/%.o: %.asm
 	@$(SHOW_CPL_ASM) $@ $(TREAT_PATH)
-	@$(AS) $(NASM_FLAGS) $@ $<
+	@$(AS) $(NASM_FLAGS) -o $@ $<
 
 $(OUT_DIR)/%.o: %.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
-	@$(CC) $(GCC_FLAGS) $@ $<
+	@$(CC) $(GCC_FLAGS) -o $@ $<
+
+### Dependencies ###
+../out/lib/lib.o: lib.c ../include/types.h ../include/sys/global.h \
+ ../include/sys/protect.h ../include/sys/proto.h
+../out/lib/printf.o: printf.c ../include/types.h ../include/sys/global.h \
+ ../include/sys/protect.h ../include/sys/proto.h ../include/stdio.h \
+ ../include/types.h ../include/string.h
+../out/lib/vsprintf.o: vsprintf.c ../include/types.h ../include/string.h \
+ ../include/types.h ../include/stdio.h
+../out/lib/string.o: string.c ../include/types.h ../include/sys/global.h \
+ ../include/sys/protect.h ../include/sys/proto.h
