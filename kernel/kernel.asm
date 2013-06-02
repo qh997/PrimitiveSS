@@ -2,7 +2,7 @@
 
 ; Functions
 extern  init
-extern  exception_handler
+extern  kernel_main
 
 ; Global variables
 extern  disp_pos
@@ -36,4 +36,5 @@ _start:
     jmp    SEL_T:new_gdtr
 
 new_gdtr:
+    call   kernel_main
     jmp    $

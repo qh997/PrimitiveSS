@@ -26,6 +26,7 @@ OBJS += $(OUT_DIR)/PIC8259A.o
 OBJS += $(OUT_DIR)/protect.o
 OBJS += $(OUT_DIR)/traps.o
 OBJS += $(OUT_DIR)/clock.o
+OBJS += $(OUT_DIR)/main.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
 
@@ -72,5 +73,9 @@ $(OUT_DIR)/traps.o: traps.c
 	@$(CC) $(GCC_FLAGS) $@ $<
 
 $(OUT_DIR)/clock.o: clock.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/main.o: main.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<
