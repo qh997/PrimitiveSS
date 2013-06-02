@@ -42,6 +42,7 @@ update_cursor:
 
 disable_irq:
     mov    ecx, [esp + 4]        ; ecx = irq
+    sub    ecx, 20h
     pushf                        ;
     cli                          ; 关中断，将在 iretd 时打开
     mov    ah, 1                 ;
@@ -73,6 +74,7 @@ disable_irq:
 
 enable_irq:
     mov    ecx, [esp + 4]
+    sub    ecx, 20h
     pushf
     cli
     mov    ah, ~1

@@ -9,8 +9,8 @@ void init()
 {
     disp_str("kernel init ... ");
 
-    PIC8259A_init();
     protect_init();
+    PIC8259A_init();
 
     early_printk("OK\n");
 }
