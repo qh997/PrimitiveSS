@@ -1,4 +1,3 @@
-MAKE := make
 AS   := nasm
 CC   := gcc
 LD   := ld

@@ -22,8 +22,9 @@ GCC_FLAGS := -I $(INC_PATH)/ -c -m32 -std=c99 -fno-builtin -nostdlib -Wall -fomi
 OBJS += $(OUT_DIR)/kernel.o
 OBJS += $(OUT_DIR)/init.o
 OBJS += $(OUT_DIR)/global.o
-OBJS += $(OUT_DIR)/interrupts.o
+OBJS += $(OUT_DIR)/PIC8259A.o
 OBJS += $(OUT_DIR)/protect.o
+OBJS += $(OUT_DIR)/traps.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst ..,., $(obj)))
 
@@ -57,10 +58,14 @@ $(OUT_DIR)/global.o: global.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<
 
-$(OUT_DIR)/interrupts.o: interrupts.c
+$(OUT_DIR)/PIC8259A.o: PIC8259A.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<
 
 $(OUT_DIR)/protect.o: protect.c
+	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
+	@$(CC) $(GCC_FLAGS) $@ $<
+
+$(OUT_DIR)/traps.o: traps.c
 	@$(SHOW_CPL_C) $@ $(TREAT_PATH)
 	@$(CC) $(GCC_FLAGS) $@ $<

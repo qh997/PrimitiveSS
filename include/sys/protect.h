@@ -79,6 +79,6 @@ struct desc_gate {
     u16 offset_1;
 } __attribute__((packed));;
 
-void init_protect();
+void protect_init();
 
 #endif
