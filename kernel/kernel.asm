@@ -15,8 +15,6 @@ extern  idtr
 global _start
 
 _start:
-    mov    eax, SEL_S
-    mov    ss, eax
     mov    eax, STK_TOP
     mov    esp, eax
 
@@ -33,8 +31,10 @@ _start:
 
     lidt   [idtr]
 
-    jmp    SEL_T:new_gdtr
+    jmp    SEL_TEXT:new_gdtr
 
 new_gdtr:
-    call   kernel_main
+    mov    eax, STK_TOP
+    mov    esp, eax
+    jmp    kernel_main
     jmp    $

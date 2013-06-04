@@ -28,19 +28,16 @@ KERNEL_PDE_BASE       equ  00h
 KERNEL_PTE_BASE       equ  KERNEL_PDE_BASE + 01000h
 KERNEL_PTE_NR         equ  04h
 KERNEL_SIZE_MAX       equ  01000h * KERNEL_PTE_NR ; unit: 4KB
-STK_B                 equ  00h ; KERNEL_PTE_BASE + 4096 * KERNEL_PTE_NR
-STK_L                 equ  KERNEL_SEG + KERNEL_OFFSET - STK_B
-STK_TOP               equ  STK_L
+STK_TOP               equ  KERNEL_SEG + KERNEL_OFFSET
 
 PHY_DISP_POS          equ  090000h
 PHY_MEM_BASE          equ  PHY_DISP_POS + 04h
 PHY_MEM_SIZE          equ  PHY_MEM_BASE + 04h
 
-SEL_0  equ  00h
-SEL_T  equ  08h
-SEL_D  equ  10h
-SEL_S  equ  18h
-SEL_V  equ  20h + 3
+SEL_NULL  equ  00h
+SEL_TEXT  equ  08h
+SEL_DATA  equ  10h
+SEL_VIDO  equ  18h + 3
 
 %define  LOADER_MAGIC  db  "81192"
 LOADER_MAGIC_NR  equ  5

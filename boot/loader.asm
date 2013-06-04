@@ -8,7 +8,6 @@ jmp    START
 GDT_NONE: DESCRIPTOR        0,               0, 0
 GDT_TEXT: DESCRIPTOR        0, KERNEL_SIZE_MAX, DA_CR |DA_32|DA_4K
 GDT_DATA: DESCRIPTOR        0, KERNEL_SIZE_MAX, DA_DRW|DA_32|DA_4K
-GDT_STAK: DESCRIPTOR    STK_B,           STK_L, DA_DRWA|DA_32
 GDT_VIDO: DESCRIPTOR VGA_ADDR,          0ffffh, DA_DRW|DA_DPL3
 
 gdt_len  equ  $ - GDT_NONE
@@ -82,7 +81,7 @@ START:
     or     eax, 1
     mov    cr0, eax
 
-    jmp    dword SEL_T:(LOADER_ADDR + PM_START)
+    jmp    dword SEL_TEXT:(LOADER_ADDR + PM_START)
 
 %include "boot/io_rm.inc"
 
@@ -90,13 +89,13 @@ ALIGN 32
 [BITS 32]
 
 PM_START:
-    mov    ax, SEL_D
+    mov    ax, SEL_DATA
     mov    ds, ax
     mov    es, ax
     mov    fs, ax
     mov    ss, ax
     mov    esp, LOADER_ADDR + LOADER_OFFSET
-    mov    ax, SEL_V
+    mov    ax, SEL_VIDO
     mov    gs, ax
 
     _DISP_STR 03h, strPmStart
@@ -113,7 +112,7 @@ PM_START:
     mov    eax, [dwDispPos]
     mov    dword [PHY_DISP_POS], eax
 
-    jmp    SEL_T:(KERNEL_ADDR + KERNEL_OFFSET)
+    jmp    SEL_TEXT:(KERNEL_ADDR + KERNEL_OFFSET)
 
 %include "boot/io_pm.inc"
 %include "boot/elf.inc"

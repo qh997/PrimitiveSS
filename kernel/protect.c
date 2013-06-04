@@ -16,7 +16,7 @@ static void init_idt_desc(unsigned char vector, u8 desc_type, void *handler, uns
     u32 base = (u32)handler;
 
     p_gate->offset_0 = base & 0xFFFF;
-    p_gate->selector = SEL_T;
+    p_gate->selector = SEL_TEXT;
     p_gate->pcount   = 0;
     p_gate->attr     = desc_type | (privilege << 5);
     p_gate->offset_1 = (base >> 16) & 0xFFFF;
