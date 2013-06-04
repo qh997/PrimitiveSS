@@ -7,10 +7,7 @@
 
 void init()
 {
-    disp_str("kernel init ... ");
-
     protect_init();
+    trap_init();
     PIC8259A_init();
-
-    early_printk("OK\n");
 }

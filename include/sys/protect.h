@@ -43,25 +43,22 @@
 #define PRIVI_TASK 1
 #define PRIVI_USER 3
 
-#define INDEX_NULL  0 // ┓
-#define INDEX_TEXT  1 // ┣ LOADER 里面已经确定了的.
-#define INDEX_DATA  2 // ┃
-#define INDEX_VIDO  3 // ┛
-#define INDEX_TSS   4
-#define INDEX_LDT   5
+#define INDEX_NULL    0 // ┓
+#define INDEX_TEXT    1 // ┣ LOADER 里已确定
+#define INDEX_DATA    2 // ┃
+#define INDEX_VIDO    3 // ┛
+#define INDEX_1ST_LDT 4
+#define INDEX_1ST_TSS 5
 
-#define SEL_NULL  (INDEX_NULL  << 3)
-#define SEL_TEXT  (INDEX_TEXT  << 3)
-#define SEL_DATA  (INDEX_DATA  << 3)
-#define SEL_VIDO ((INDEX_VIDO  << 3) + 3)
-#define SEL_TSS   (INDEX_TSS   << 3)
-#define SEL_LDT   (INDEX_LDT   << 3)
-
-#define V_MEM_BASE    0xB8000
+#define SEL_NULL     (INDEX_NULL    << 3)
+#define SEL_TEXT     (INDEX_TEXT    << 3)
+#define SEL_DATA     (INDEX_DATA    << 3)
+#define SEL_VIDO    ((INDEX_VIDO    << 3) + SA_RPL3)
+#define SEL_1ST_LDT  (INDEX_1ST_LDT << 3)
+#define SEL_1ST_TSS  (INDEX_1ST_TSS << 3)
 
 #define KERNEL_PTE_NR 0x4
-#define PROC_LNSPACE 4 // in MB
-#define NR_GDT (4 + 2 * (1024 - KERNEL_PTE_NR) / PROC_LNSPACE)
+#define NR_GDT (4 + 2 * (1024 - KERNEL_PTE_NR))
 #define NR_IDT 256
 
 struct desc_seg {
@@ -81,6 +78,37 @@ struct desc_gate {
     u16 offset_1;
 } __attribute__((packed));
 
+struct tss {
+    u32 backlink;
+    u32 esp0;
+    u32 ss0;
+    u32 esp1;
+    u32 ss1;
+    u32 esp2;
+    u32 ss2;
+    u32 cr3;
+    u32 eip;
+    u32 eflags;
+    u32 eax;
+    u32 ecx;
+    u32 edx;
+    u32 ebx;
+    u32 esp;
+    u32 ebp;
+    u32 esi;
+    u32 edi;
+    u32 es;
+    u32 cs;
+    u32 ss;
+    u32 ds;
+    u32 fs;
+    u32 gs;
+    u32 ldt;
+    u16 trap;
+    u16 iobase;
+} __attribute__((packed));
+
+void init_desc(struct desc_seg *p_desc, u32 base, u32 limit, u16 attribute);
 void protect_init();
 
 #endif

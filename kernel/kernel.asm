@@ -10,6 +10,7 @@ extern  mem_base
 extern  mem_size
 extern  gdtr
 extern  idtr
+extern  tss
 
 [section .text]
 global _start
@@ -31,10 +32,15 @@ _start:
 
     lidt   [idtr]
 
+    ;xor    eax, eax
+    ;mov    ax, SEL_TSS
+    ;ltr    ax
+
     jmp    SEL_TEXT:new_gdtr
 
 new_gdtr:
     mov    eax, STK_TOP
     mov    esp, eax
     jmp    kernel_main
+
     jmp    $

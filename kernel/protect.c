@@ -6,8 +6,9 @@
 #include "string.h"
 
 struct desc_seg gdt[NR_GDT];
-u8 gdtr[6];
 struct desc_gate idt[NR_IDT];
+//struct tss tss;
+u8 gdtr[6];
 u8 idtr[6];
 
 static void init_idt_desc(unsigned char vector, u8 desc_type, void *handler, unsigned char privilege)
@@ -36,14 +37,14 @@ void register_irq_handler(int vector, void *handler)
     p_gate->offset_1 = (base >> 16) & 0xFFFF;
 }
 
-void init_desc(struct desc_seg *p_desc, u32 base, u32 limit, u16 attribute)
+void init_desc(struct desc_seg *desc, u32 base, u32 limit, u16 type)
 {
-    p_desc->limit_0        = limit & 0xFFFF;
-    p_desc->base_0         = base & 0xFFFF;
-    p_desc->base_1         = (base >> 16) & 0xFF;
-    p_desc->type_0         = attribute & 0xFF;
-    p_desc->limit_1_type_1 = ((limit>>16) & 0x0F) | ((attribute>>8) & 0xF0);
-    p_desc->base_2         = (base >> 24) & 0xFF;
+    desc->limit_0        = limit & 0xFFFF;
+    desc->base_0         = base & 0xFFFF;
+    desc->base_1         = (base >> 16) & 0xFF;
+    desc->type_0         = type & 0xFF;
+    desc->limit_1_type_1 = ((limit>>16) & 0x0F) | ((type>>8) & 0xF0);
+    desc->base_2         = (base >> 24) & 0xFF;
 }
 
 void protect_init()
@@ -52,6 +53,16 @@ void protect_init()
     memcpy((void *)&gdt, (void *)(*(u32 *)&gdtr[2]), *(u16 *)(&gdtr[0]) + 1);
     *(u16 *)(&gdtr[0]) = NR_GDT * sizeof(struct desc_seg) - 1;
     *(u32 *)(&gdtr[2]) = (u32)&gdt;
+
+    /*memset(&tss, 0x0, sizeof(struct tss));
+    tss.ss0 = SEL_DATA;
+    tss.iobase = sizeof(struct tss);
+    init_desc(
+        &gdt[INDEX_TSS],
+        (u32)&tss,
+        sizeof(struct tss) - 1,
+        DA_386TSS
+    );*/
 
     memset(idt, 0x0, NR_IDT * sizeof(struct desc_gate));
     *(u16 *)(&idtr[0]) = NR_IDT * sizeof(struct desc_gate) - 1;
@@ -62,6 +73,4 @@ void protect_init()
 
     for (int i = 3; i < 6; i++)
         idt[i].attr &= 0x9f | (PRIVI_USER << 5);
-
-    trap_init();
 }
