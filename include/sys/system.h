@@ -1,6 +1,8 @@
 #ifndef __SYSTEM_H__
 #define __SYSTEM_H__
 
+#include "sys/protect.h"
+
 #define stol(sel) \
     ((gdt[sel >> 3].base_2 << 24) | \
      (gdt[sel >> 3].base_1 << 16) | \

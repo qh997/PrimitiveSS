@@ -58,8 +58,11 @@
 #define SEL_1ST_TSS  (INDEX_1ST_TSS << 3)
 
 #define KERNEL_PTE_NR 0x4
-#define NR_GDT (4 + 2 * (1024 - KERNEL_PTE_NR))
+#define PROC_PG_NR (1024 - KERNEL_PTE_NR)
+#define NR_GDT (4 + 2 * PROC_PG_NR)
 #define NR_IDT 256
+
+#define LDT_SIZE 2
 
 struct desc_seg {
     u16 limit_0;
@@ -107,6 +110,11 @@ struct tss {
     u16 trap;
     u16 iobase;
 } __attribute__((packed));
+
+extern struct desc_seg gdt[];
+extern struct desc_gate idt[];
+extern u8 gdtr[];
+extern u8 idtr[];
 
 void init_desc(struct desc_seg *p_desc, u32 base, u32 limit, u16 attribute);
 void protect_init();

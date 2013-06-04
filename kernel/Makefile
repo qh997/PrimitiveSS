@@ -26,6 +26,7 @@ OBJS += $(OUT_DIR)/protect.o
 OBJS += $(OUT_DIR)/traps.o
 OBJS += $(OUT_DIR)/clock.o
 OBJS += $(OUT_DIR)/main.o
+OBJS += $(OUT_DIR)/sched.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
