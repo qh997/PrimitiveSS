@@ -24,8 +24,11 @@
 #define TRAP_PAGE_FAULT   0xE
 #define TRAP_COPROC_ERR   0x10
 
+#define HWIRQ_NR          16
+#define HWIRQ_CLOCK        0
+
 #define INT_PIC_M         0x20
-#define INT_CLOCK         INT_PIC_M + 0
+#define INT_CLOCK         INT_PIC_M + HWIRQ_CLOCK
 #define INT_KEYBOARD      INT_PIC_M + 1
 #define INT_CASCADE       INT_PIC_M + 2  /* cascade enable for 2nd AT controller */
 #define INT_ETHER         INT_PIC_M + 3  /* default ethernet interrupt vector */
@@ -46,15 +49,14 @@
 #define HZ             100      /* clock freq (software settable on IBM-PC) */
 
 typedef void (*irq_handler)(int irq);
-//typedef void (*excp_handler)(int b, int c, int d);
-
-extern irq_handler irq_table[];
+typedef void (*hw_irq_handler)();
 
 extern void PIC8259A_init();
-void trap_init();
-
-extern int disable_irq(int irq);
-extern void enable_irq(int irq);
+extern void trap_init();
+extern void clock_init();
+extern int disable_hwirq(int irq);
+extern void enable_hwirq(int irq);
 extern void register_irq_handler(int vector, void *handler);
+extern void register_hwirq_handler(int irq, hw_irq_handler handler);
 
 #endif

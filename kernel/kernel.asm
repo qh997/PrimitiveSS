@@ -31,10 +31,6 @@ _start:
 
     lidt   [idtr]
 
-    ;xor    eax, eax
-    ;mov    ax, SEL_TSS
-    ;ltr    ax
-
     jmp    SEL_TEXT:new_gdtr
 
 new_gdtr:

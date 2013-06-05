@@ -30,3 +30,51 @@ INT_S_CTLMASK  equ  0xA1
 EOI            equ  0x20
 
 SELECTOR_TSS   equ  0x20
+
+%macro  hwint_master 1
+    call   save
+
+    in     al, INT_M_CTLMASK ; ┓
+    or     al, (1 << %1)     ; ┣ 屏蔽该中断
+    out    INT_M_CTLMASK, al ; ┛
+
+    mov    al, EOI           ; ┓
+    out    INT_M_CTL, al     ; ┻ 继续接收中断
+
+    sti                         ; 开中断
+    push   %1                   ;
+    call   [hwirq_table + 4 * %1] ; ((irq_handler *)hwirq_table[irq])(irq)
+    pop    ecx                  ;
+    cli                         ; 关中断
+
+    in     al, INT_M_CTLMASK ; ┓
+    and    al, ~(1 << %1)    ; ┣ 恢复该中断
+    out    INT_M_CTLMASK, al ; ┛
+
+    ret ; 此时将跳转至在 save 中 push 的地址（restart/restart_reenter）
+%endmacro
+
+%macro  hwint_slave 1
+    call   save
+
+    in     al, INT_S_CTLMASK   ; ┓
+    or     al, (1 << (%1 - 8)) ; ┣ 屏蔽该中断
+    out    INT_S_CTLMASK, al   ; ┛
+
+    mov    al, EOI             ; ┓
+    out    INT_M_CTL, al       ; ┃
+    nop                        ; ┣ 继续接收中断
+    out    INT_S_CTL, al       ; ┛
+
+    sti
+    push   %1
+    call   [hwirq_table + 4 * %1] ; ((irq_handler *)hwirq_table[irq])(irq)
+    pop    ecx
+    cli
+
+    in     al, INT_S_CTLMASK    ; ┓
+    and    al, ~(1 << (%1 - 8)) ; ┣ 恢复该中断
+    out    INT_S_CTLMASK, al    ; ┛
+
+    ret ; 此时将跳转至在 save 中 push 的地址（restart/restart_reenter）
+%endmacro

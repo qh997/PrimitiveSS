@@ -6,11 +6,13 @@
 
 u32 jiffies = 0;
 
+extern void hwint00(int irq);
+
 void clock_handler()
 {
     jiffies++;
 
-    if (!k_reenter)
+    if (k_reenter)
         return;
 
     current->counter--;
@@ -26,6 +28,7 @@ void clock_init()
     out_b(TIMER0, (u8)((TIMER_FREQ / HZ) >> 8));
 
     /* 设定时钟中断处理程序 */
-    register_irq_handler(INT_CLOCK, clock_handler);
-    //enable_irq(INT_CLOCK);
+    register_irq_handler(INT_CLOCK, hwint00);
+    register_hwirq_handler(HWIRQ_CLOCK, clock_handler);
+    enable_hwirq(INT_CLOCK);
 }

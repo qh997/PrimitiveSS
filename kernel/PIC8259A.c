@@ -1,7 +1,7 @@
 #include "sys/proto.h"
 #include "sys/interrupts.h"
 
-extern void clock_init();
+hw_irq_handler hwirq_table[HWIRQ_NR];
 
 void PIC8259A_init()
 {
@@ -17,4 +17,10 @@ void PIC8259A_init()
     out_b(INT_S_CTLMASK, 0xFF);      // 从8259, OCW1
 
     clock_init();
+}
+
+void register_hwirq_handler(int irq, hw_irq_handler handler)
+{
+    disable_hwirq(irq);
+    hwirq_table[irq] = handler;
 }

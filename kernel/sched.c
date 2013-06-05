@@ -60,7 +60,7 @@ void proc_init(pentry entry, char *name, u8 *s)
     p->regs.esp = (u32)((u8 *)s + STACK_SIZE);
     p->regs.eflags = 0x3202;
 
-    p->priority = 15;
+    p->priority = PROC_PG_NR / (i + 1);
 }
 
 void sched_init()
@@ -86,13 +86,21 @@ void sched_init()
 
 void schedule()
 {
-    for (int i = 0; i < PROC_PG_NR; i++) {
-        struct proc *p = proc_table + i;
-        if (!p->used)
-            continue;
-        if (current->counter < p->counter)
-            current = p;
-        if (!p->counter)
-            p->counter = p->priority;
+    int c = -1;
+    while (TRUE) {
+        for (int i = 0; i < PROC_PG_NR; i++) {
+            struct proc *p = proc_table + i;
+            if (!p->used)
+                continue;
+            if (p->counter > c)
+                c = p->counter, current = p;
+        }
+
+        if (c) break;
+        for (int i = 0; i < PROC_PG_NR; i++) {
+            struct proc *p = proc_table + i;
+            if (p->used)
+                p->counter = p->priority;
+        }
     }
 }
