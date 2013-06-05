@@ -4,15 +4,41 @@
 #include "sys/protect.h"
 #include "sys/system.h"
 
+typedef void (*pentry)();
+
+struct strackframe {
+    u32 gs;         // ┓
+    u32 fs;         // ┃
+    u32 es;         // ┣ save 压栈
+    u32 ds;         // ┛
+    u32 edi;        // ┓
+    u32 esi;        // ┃
+    u32 ebp;        // ┃
+    u32 kernel_esp; // ┃
+    u32 ebx;        // ┣ pushad 压栈
+    u32 edx;        // ┃
+    u32 ecx;        // ┃
+    u32 eax;        // ┛
+    u32 retaddr;    // call save 时压栈
+    u32 eip;        // ┓
+    u32 cs;         // ┃
+    u32 eflags;     // ┣ 中断发生时压栈
+    u32 esp;        // ┃
+    u32 ss;         // ┛
+};
+
 struct proc {
+    struct strackframe regs;
+    u16 sel_ldt;
     struct desc_seg ldt[LDT_SIZE];
-    struct tss tss;
+
+    u8 used;
 };
 
 #define _LDT(n) ((((u32)n) << 4) + SEL_1ST_LDT)
 #define _TSS(n) ((((u32)n) << 4) + SEL_1ST_TSS)
 
-#define ltr(n) __asm__("ltr %%ax"::"a" (_TSS(n)))
+#define ltr() __asm__("ltr %%ax"::"a" (SEL_TSS))
 #define lldt(n) __asm__("lldt %%ax"::"a" (_LDT(n)))
 
 #define set_desc_ldt(n, addr) \
@@ -23,19 +49,11 @@ struct proc {
                   DA_LDT \
                   ); \
     } while (0)
-#define set_desc_tss(n, addr) \
-    do { \
-        init_desc(&gdt[n + INDEX_1ST_TSS], \
-                  vtol(SEL_DATA, addr), \
-                  sizeof(struct tss) - 1, \
-                  DA_386TSS \
-                  ); \
-    } while (0)
 
 extern struct proc proc_table[];
 extern struct proc *current;
 
-void proc_init(int n);
+void proc_init(pentry entry, char *name, u8 *s);
 void sched_init();
 
 #endif

@@ -47,15 +47,15 @@
 #define INDEX_TEXT    1 // ┣ LOADER 里已确定
 #define INDEX_DATA    2 // ┃
 #define INDEX_VIDO    3 // ┛
-#define INDEX_1ST_LDT 4
-#define INDEX_1ST_TSS 5
+#define INDEX_TSS     4
+#define INDEX_1ST_LDT 5
 
 #define SEL_NULL     (INDEX_NULL    << 3)
 #define SEL_TEXT     (INDEX_TEXT    << 3)
 #define SEL_DATA     (INDEX_DATA    << 3)
 #define SEL_VIDO    ((INDEX_VIDO    << 3) + SA_RPL3)
+#define SEL_TSS      (INDEX_TSS     << 3)
 #define SEL_1ST_LDT  (INDEX_1ST_LDT << 3)
-#define SEL_1ST_TSS  (INDEX_1ST_TSS << 3)
 
 #define KERNEL_PTE_NR 0x4
 #define PROC_PG_NR (1024 - KERNEL_PTE_NR)
@@ -63,6 +63,11 @@
 #define NR_IDT 256
 
 #define LDT_SIZE 2
+#define INDEX_LDT_TEXT 0
+#define INDEX_LDT_DATA 1
+
+#define SEL_LDT_TEXT (INDEX_LDT_TEXT << 3)
+#define SEL_LDT_DATA (INDEX_LDT_DATA << 3)
 
 struct desc_seg {
     u16 limit_0;

@@ -3,10 +3,15 @@
 #include "stdio.h"
 #include "string.h"
 
+#define STACK_SIZE (1024)
+
+struct tss   tss;
 struct proc proc_table[PROC_PG_NR];
 struct proc *current;
+u8 k_reenter;
 
-u8 stack[2048];
+u8 stackA[STACK_SIZE];
+u8 stackB[STACK_SIZE];
 
 void ProcA()
 {
@@ -25,51 +30,55 @@ void ProcB()
     }
 }
 
-void proc_init(int n)
+void proc_init(pentry entry, char *name, u8 *s)
 {
-    struct proc *p = (struct proc *)proc_table + n;
+    int i = 0;
+    for (i = 0; i < PROC_PG_NR; i++)
+        if (proc_table[i].used == FALSE)
+            break;
+
+    struct proc *p = (struct proc *)proc_table + i;
     memset(p, 0x0, sizeof(struct proc));
-    p->tss.backlink = 0;
-    p->tss.esp0 = (u32)stack + 1024;
-    p->tss.ss0 = SEL_DATA;
-    p->tss.esp1 = 0;
-    p->tss.ss1 = 0;
-    p->tss.esp2 = 0;
-    p->tss.ss2 = 0;
-    p->tss.cr3 = 0;
-    p->tss.eip = 0;
-    p->tss.eflags = 0;
-    p->tss.eax = 0;
-    p->tss.ecx = 0;
-    p->tss.edx = 0;
-    p->tss.ebx = 0;
-    p->tss.esp = 0;
-    p->tss.ebp = 0;
-    p->tss.esi = 0;
-    p->tss.edi = 0;
-    p->tss.es = 0;
-    p->tss.cs = 0;
-    p->tss.ss = 0;
-    p->tss.ds = 0;
-    p->tss.fs = 0;
-    p->tss.gs = 0;
-    p->tss.ldt = _LDT(0);
-    p->tss.trap = 0;
-    p->tss.iobase = sizeof(struct tss);
 
-    p->ldt[0] = gdt[INDEX_TEXT];
-    p->ldt[0].type_0 = DA_C | PRIVI_USER << 5;
-    p->ldt[1] = gdt[INDEX_DATA];
-    p->ldt[1].type_0 = DA_DRW | PRIVI_USER << 5;
+    p->used = TRUE;
 
-    set_desc_ldt(n, &proc_table[n].ldt);
-    set_desc_tss(n, &proc_table[n].tss);
+    p->ldt[INDEX_LDT_TEXT] = gdt[INDEX_TEXT];
+    p->ldt[INDEX_LDT_TEXT].type_0 = DA_C | PRIVI_USER << 5;
+    p->ldt[INDEX_LDT_DATA] = gdt[INDEX_DATA];
+    p->ldt[INDEX_LDT_DATA].type_0 = DA_DRW | PRIVI_USER << 5;
+    p->sel_ldt = SEL_1ST_LDT + (i << 3);
 
-    early_printk("&p->tss = 0x%x\n", &p->tss);
-    early_printk("&proc_table[n].tss = 0x%x\n", &proc_table[n].tss);
+    set_desc_ldt(i, &proc_table[i].ldt);
+
+    p->regs.cs = SEL_LDT_TEXT | SA_TIL | PRIVI_USER;
+    p->regs.ds =
+    p->regs.es =
+    p->regs.fs =
+    p->regs.ss = SEL_LDT_DATA | SA_TIL | PRIVI_USER;
+    p->regs.gs = (SEL_VIDO & SA_RPL_MASK) | PRIVI_USER;
+
+    p->regs.eip = (u32)entry;
+    p->regs.esp = (u32)((u8 *)s + STACK_SIZE);
+    p->regs.eflags = 0x3202;
 }
 
 void sched_init()
 {
-    proc_init(0);
+    memset(&tss, 0x0, sizeof(struct tss));
+    tss.ss0 = SEL_DATA;
+    tss.iobase = sizeof(struct tss);
+    init_desc(
+        &gdt[INDEX_TSS],
+        vtol(SEL_DATA, &tss),
+        sizeof(struct tss) - 1,
+        DA_386TSS
+    );
+    ltr();
+
+    memset(&proc_table, 0x0, PROC_PG_NR * sizeof(struct proc));
+    proc_init(ProcA, "Proc A", stackA);
+    proc_init(ProcB, "Proc B", stackB);
+
+    k_reenter = 0;
+    current = proc_table;
 }

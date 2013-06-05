@@ -27,6 +27,7 @@ OBJS += $(OUT_DIR)/traps.o
 OBJS += $(OUT_DIR)/clock.o
 OBJS += $(OUT_DIR)/main.o
 OBJS += $(OUT_DIR)/sched.o
+OBJS += $(OUT_DIR)/ints.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
@@ -67,7 +68,7 @@ $(OUT_DIR)/%.o: %.c
 ../out/kernel/init.o: init.c ../include/sys/global.h \
  ../include/sys/protect.h ../include/types.h ../include/sys/proto.h \
  ../include/string.h ../include/types.h ../include/sys/interrupts.h \
- ../include/stdio.h
+ ../include/stdio.h ../include/sys/sched.h ../include/sys/system.h
 ../out/kernel/global.o: global.c ../include/sys/protect.h \
  ../include/types.h
 ../out/kernel/PIC8259A.o: PIC8259A.c ../include/sys/proto.h \
@@ -81,4 +82,9 @@ $(OUT_DIR)/%.o: %.c
 ../out/kernel/clock.o: clock.c ../include/sys/interrupts.h \
  ../include/sys/proto.h ../include/types.h ../include/stdio.h \
  ../include/types.h
-../out/kernel/main.o: main.c ../include/stdio.h ../include/types.h
+../out/kernel/main.o: main.c ../include/stdio.h ../include/types.h \
+ ../include/sys/sched.h ../include/sys/protect.h ../include/types.h \
+ ../include/sys/system.h
+../out/kernel/sched.o: sched.c ../include/sys/sched.h \
+ ../include/sys/protect.h ../include/types.h ../include/sys/system.h \
+ ../include/stdio.h ../include/types.h ../include/string.h

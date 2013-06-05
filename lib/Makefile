@@ -64,7 +64,7 @@ $(OUT_DIR)/%.o: %.c
  ../include/sys/protect.h ../include/sys/proto.h
 ../out/lib/printf.o: printf.c ../include/types.h ../include/sys/global.h \
  ../include/sys/protect.h ../include/sys/proto.h ../include/stdio.h \
- ../include/types.h ../include/string.h
+ ../include/types.h ../include/string.h ../include/sys/system.h
 ../out/lib/vsprintf.o: vsprintf.c ../include/types.h ../include/string.h \
  ../include/types.h ../include/stdio.h
 ../out/lib/string.o: string.c ../include/types.h ../include/sys/global.h \

@@ -3,8 +3,6 @@
 #include "stdio.h"
 #include "types.h"
 
-void clock_handler_a();
-
 u32 jiffies = 0;
 
 void clock_handler()
@@ -20,6 +18,6 @@ void clock_init()
     out_b(TIMER0, (u8)((TIMER_FREQ / HZ) >> 8));
 
     /* 设定时钟中断处理程序 */
-    register_irq_handler(INT_CLOCK, clock_handler_a);
-    enable_irq(INT_CLOCK);
+    register_irq_handler(INT_CLOCK, clock_handler);
+    //enable_irq(INT_CLOCK);
 }
