@@ -32,15 +32,13 @@ struct proc {
     u16 sel_ldt;
     struct desc_seg ldt[LDT_SIZE];
 
+    int priority;
+    int counter;
+
     u8 used;
 };
 
-#define _LDT(n) ((((u32)n) << 4) + SEL_1ST_LDT)
-#define _TSS(n) ((((u32)n) << 4) + SEL_1ST_TSS)
-
 #define ltr() __asm__("ltr %%ax"::"a" (SEL_TSS))
-#define lldt(n) __asm__("lldt %%ax"::"a" (_LDT(n)))
-
 #define set_desc_ldt(n, addr) \
     do { \
         init_desc(&gdt[n + INDEX_1ST_LDT], \
@@ -52,8 +50,10 @@ struct proc {
 
 extern struct proc proc_table[];
 extern struct proc *current;
+extern u8 k_reenter;
 
 void proc_init(pentry entry, char *name, u8 *s);
 void sched_init();
+void schedule();
 
 #endif

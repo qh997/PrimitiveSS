@@ -2,12 +2,20 @@
 #include "sys/proto.h"
 #include "stdio.h"
 #include "types.h"
+#include "sys/sched.h"
 
 u32 jiffies = 0;
 
 void clock_handler()
 {
-    early_printk("c");
+    jiffies++;
+
+    if (!k_reenter)
+        return;
+
+    current->counter--;
+
+    schedule();
 }
 
 void clock_init()

@@ -7,7 +7,6 @@
 
 struct desc_seg gdt[NR_GDT];
 struct desc_gate idt[NR_IDT];
-//struct tss tss;
 u8 gdtr[6];
 u8 idtr[6];
 
@@ -53,16 +52,6 @@ void protect_init()
     memcpy((void *)&gdt, (void *)(*(u32 *)&gdtr[2]), *(u16 *)(&gdtr[0]) + 1);
     *(u16 *)(&gdtr[0]) = NR_GDT * sizeof(struct desc_seg) - 1;
     *(u32 *)(&gdtr[2]) = (u32)&gdt;
-
-    /*memset(&tss, 0x0, sizeof(struct tss));
-    tss.ss0 = SEL_DATA;
-    tss.iobase = sizeof(struct tss);
-    init_desc(
-        &gdt[INDEX_TSS],
-        (u32)&tss,
-        sizeof(struct tss) - 1,
-        DA_386TSS
-    );*/
 
     memset(idt, 0x0, NR_IDT * sizeof(struct desc_gate));
     *(u16 *)(&idtr[0]) = NR_IDT * sizeof(struct desc_gate) - 1;

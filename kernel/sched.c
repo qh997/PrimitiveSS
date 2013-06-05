@@ -17,8 +17,7 @@ void ProcA()
 {
     while (1) {
         early_printk("A");
-        for (int i = 0; i < 0xffff; i++);
-        early_printk("X");
+        for (int i = 0; i < 0xfffff; i++);
     }
 }
 
@@ -34,7 +33,7 @@ void proc_init(pentry entry, char *name, u8 *s)
 {
     int i = 0;
     for (i = 0; i < PROC_PG_NR; i++)
-        if (proc_table[i].used == FALSE)
+        if (!proc_table[i].used)
             break;
 
     struct proc *p = (struct proc *)proc_table + i;
@@ -60,6 +59,8 @@ void proc_init(pentry entry, char *name, u8 *s)
     p->regs.eip = (u32)entry;
     p->regs.esp = (u32)((u8 *)s + STACK_SIZE);
     p->regs.eflags = 0x3202;
+
+    p->priority = 15;
 }
 
 void sched_init()
@@ -81,4 +82,17 @@ void sched_init()
 
     k_reenter = 0;
     current = proc_table;
+}
+
+void schedule()
+{
+    for (int i = 0; i < PROC_PG_NR; i++) {
+        struct proc *p = proc_table + i;
+        if (!p->used)
+            continue;
+        if (current->counter < p->counter)
+            current = p;
+        if (!p->counter)
+            p->counter = p->priority;
+    }
 }

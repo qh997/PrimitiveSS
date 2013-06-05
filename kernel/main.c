@@ -10,6 +10,4 @@ void kernel_main()
     sched_init();
 
     restart();
-
-    while (1);
 }
