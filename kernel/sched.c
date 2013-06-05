@@ -6,12 +6,23 @@
 struct proc proc_table[PROC_PG_NR];
 struct proc *current;
 
-u8 stack[1024];
+u8 stack[2048];
 
 void ProcA()
 {
-    early_printk("...ProcA...\n");
-    while (1);
+    while (1) {
+        early_printk("A");
+        for (int i = 0; i < 0xffff; i++);
+        early_printk("X");
+    }
+}
+
+void ProcB()
+{
+    while (1) {
+        early_printk("B");
+        for (int i = 0; i < 0xfffff; i++);
+    }
 }
 
 void proc_init(int n)
@@ -49,14 +60,13 @@ void proc_init(int n)
     p->ldt[0] = gdt[INDEX_TEXT];
     p->ldt[0].type_0 = DA_C | PRIVI_USER << 5;
     p->ldt[1] = gdt[INDEX_DATA];
-    p->ldt[1].type_0 = DA_C | PRIVI_USER << 5;
+    p->ldt[1].type_0 = DA_DRW | PRIVI_USER << 5;
 
     set_desc_ldt(n, &proc_table[n].ldt);
     set_desc_tss(n, &proc_table[n].tss);
 
-    __asm__("pushfl ; andl $0xffffbfff,(%esp) ; popfl");
-    ltr(0);
-    lldt(0);
+    early_printk("&p->tss = 0x%x\n", &p->tss);
+    early_printk("&proc_table[n].tss = 0x%x\n", &proc_table[n].tss);
 }
 
 void sched_init()

@@ -37,7 +37,6 @@
 #define INT_PIC_S         INT_PIC_M + 8
 #define INT_AT_WINI       INT_PIC_S + 6 /* at winchester */
 
-
 /* 8253/8254 PIT */
 #define TIMER0         0x40     /* I/O port for timer channel 0 */
 #define TIMER_MODE     0x43     /* I/O port for timer mode control */

@@ -27,7 +27,7 @@ struct proc {
     do { \
         init_desc(&gdt[n + INDEX_1ST_TSS], \
                   vtol(SEL_DATA, addr), \
-                  LDT_SIZE * sizeof(struct tss) - 1, \
+                  sizeof(struct tss) - 1, \
                   DA_386TSS \
                   ); \
     } while (0)
