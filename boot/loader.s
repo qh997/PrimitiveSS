@@ -54,7 +54,7 @@ START:
         int    15h
         jc     mcfail
         add    di, 20
-        inc    dword [_dwMCRNumber] ; dwMCRNumber：ARDS 的个数
+        inc    dword [_dwMCRNumber] ;# dwMCRNumber：ARDS 的个数
         cmp    ebx, 0
         jne    mcloop
         jmp    mcok
@@ -81,7 +81,7 @@ START:
     mul    bx
     mov    [_dwDispPos], ax
 
-    ;; 准备进入保护模式
+    ;## 准备进入保护模式 ##
     lgdt   [gdt_ptr]
 
     cli
@@ -119,7 +119,7 @@ PM_START:
 
     call   setup_paging
 
-    _DISP_STR 08h, szDisKernel
+    _DISP_STR 03h, szDisKernel
     call   _dispose_kernel
 
     mov    eax, [dwDispPos]
@@ -136,36 +136,36 @@ disp_mem_info:
     push   ecx
 
     mov    esi, MemChkBuf
-    mov    ecx, [dwMCRNumber]            ; for (i=0; i<[MCRNumber]; i++)
-    .loop:                               ; {
-        mov    edx, 5                    ;     for (j=0; j<5; j++)
-        mov    edi, ARDStruct            ;     {
-        .1:                              ;
-            push   dword [esi]           ;
-            _DISP_INT  0fh, dword [esi]  ;         DispInt(MemChkBuf[j*4]); // 显示一个成员
-            _DISP_SPACE                  ;         printf(" ");
-            pop    eax                   ;
-            stosd                        ;         ARDStruct[j*4] = MemChkBuf[j*4];
-            add    esi, 4                ;
-            dec    edx                   ;
-            cmp    edx, 0                ;
-            jnz    .1                    ;     }
-        _DISP_ENTER                      ;     printf("\n");
-        cmp    dword [dwType], 1         ;     if (Type == AddressRangeMemory)
-        jne    .2                        ;     {
-        mov    eax, [dwBaseAddrLow]      ;
-        add    eax, [dwLengthLow]        ;
-        cmp    eax, [dwMemSize]          ;         if (BaseAddrLow + LengthLow > MemSize) {
-        jb     .2                        ;
-        mov    [dwMemSize], eax          ;             MemSize = BaseAddrLow + LengthLow;
-        push   eax                       ;
-        mov    eax, [dwBaseAddrLow]      ;
-        mov    [PHY_MEM_BASE], eax       ;
-        mov    eax, [dwLengthLow]        ;
-        mov    dword [PHY_MEM_SIZE], eax ;
-        pop    eax                       ;         }
-        .2:                              ;     }
-            loop    .loop                ; }
+    mov    ecx, [dwMCRNumber]            ;# for (i=0; i<[MCRNumber]; i++)
+    .loop:                               ;# {
+        mov    edx, 5                    ;#     for (j=0; j<5; j++)
+        mov    edi, ARDStruct            ;#     {
+        .1:                              ;#
+            push   dword [esi]           ;#
+            _DISP_INT  0fh, dword [esi]  ;#         DispInt(MemChkBuf[j*4]); // 显示一个成员
+            _DISP_SPACE                  ;#         printf(" ");
+            pop    eax                   ;#
+            stosd                        ;#         ARDStruct[j*4] = MemChkBuf[j*4];
+            add    esi, 4                ;#
+            dec    edx                   ;#
+            cmp    edx, 0                ;#
+            jnz    .1                    ;#     }
+        _DISP_ENTER                      ;#     printf("\n");
+        cmp    dword [dwType], 1         ;#     if (Type == AddressRangeMemory)
+        jne    .2                        ;#     {
+        mov    eax, [dwBaseAddrLow]      ;#
+        add    eax, [dwLengthLow]        ;#
+        cmp    eax, [dwMemSize]          ;#         if (BaseAddrLow + LengthLow > MemSize) {
+        jb     .2                        ;#
+        mov    [dwMemSize], eax          ;#             MemSize = BaseAddrLow + LengthLow;
+        push   eax                       ;#
+        mov    eax, [dwBaseAddrLow]      ;#
+        mov    [PHY_MEM_BASE], eax       ;#
+        mov    eax, [dwLengthLow]        ;#
+        mov    dword [PHY_MEM_SIZE], eax ;#
+        pop    eax                       ;#         }
+        .2:                              ;#     }
+            loop    .loop                ;# }
 
     _DISP_STR  08h, szRAMSize
     _DISP_INT  0fh, dword [dwMemSize]

@@ -4,7 +4,7 @@
 #include "sys/protect.h"
 #include "sys/system.h"
 
-typedef void (*pentry)();
+typedef void (*p_entry)();
 
 struct strackframe {
     u32 gs;         // ┓
@@ -32,10 +32,10 @@ struct proc {
     u16 sel_ldt;
     struct desc_seg ldt[LDT_SIZE];
 
+    u8 status;
+
     int priority;
     int counter;
-
-    u8 used;
 };
 
 #define ltr() __asm__("ltr %%ax"::"a" (SEL_TSS))
@@ -56,7 +56,7 @@ extern u8 k_reenter;
 #define FIRST_PROC proc_table[0]
 #define LAST_PROC proc_table[NR_PROCS - 1]
 
-void proc_init(pentry entry, char *name, u8 *s);
+void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size);
 void sched_init();
 void schedule();
 

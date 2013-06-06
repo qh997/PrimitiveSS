@@ -3,43 +3,22 @@
 #include "stdio.h"
 #include "string.h"
 
-#define STACK_SIZE (1024)
-
 struct tss   tss;
 struct proc proc_table[NR_PROCS];
 struct proc *current;
 u8 k_reenter;
 
-u8 stackA[STACK_SIZE];
-u8 stackB[STACK_SIZE];
-
-void ProcA()
-{
-    while (1) {
-        early_printk("A");
-        for (int i = 0; i < 0xfffff; i++);
-    }
-}
-
-void ProcB()
-{
-    while (1) {
-        early_printk("B");
-        for (int i = 0; i < 0xfffff; i++);
-    }
-}
-
-void proc_init(pentry entry, char *name, u8 *s)
+void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
 {
     int i = 0;
     for (i = 0; i < NR_PROCS; i++)
-        if (!proc_table[i].used)
+        if (!proc_table[i].status)
             break;
 
     struct proc *p = (struct proc *)proc_table + i;
     memset(p, 0x0, sizeof(struct proc));
 
-    p->used = TRUE;
+    p->status = TRUE;
 
     p->ldt[INDEX_LDT_TEXT] = gdt[INDEX_TEXT];
     p->ldt[INDEX_LDT_TEXT].type_0 = DA_C | PRIVI_USER << 5;
@@ -57,10 +36,10 @@ void proc_init(pentry entry, char *name, u8 *s)
     p->regs.gs = (SEL_VIDO & SA_RPL_MASK) | PRIVI_USER;
 
     p->regs.eip = (u32)entry;
-    p->regs.esp = (u32)((u8 *)s + STACK_SIZE);
+    p->regs.esp = (u32)((u8 *)stk + stk_size);
     p->regs.eflags = 0x3202;
 
-    p->priority = 25;
+    p->priority = prior;
 }
 
 void sched_init()
@@ -77,8 +56,6 @@ void sched_init()
     ltr();
 
     memset(&proc_table, 0x0, NR_PROCS * sizeof(struct proc));
-    proc_init(ProcA, "Proc A", stackA);
-    proc_init(ProcB, "Proc B", stackB);
 
     k_reenter = 0;
     current = proc_table;
@@ -90,12 +67,12 @@ void schedule()
     struct proc *p;
     while (TRUE) {
         for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
-            if (p->used && p->counter > c)
+            if (p->status && p->counter > c)
                 c = p->counter, current = p;
 
         if (c) break;
         for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
-            if (p->used)
+            if (p->status)
                 p->counter = p->priority;
     }
 }
