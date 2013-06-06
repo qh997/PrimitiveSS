@@ -52,6 +52,10 @@ extern struct proc proc_table[];
 extern struct proc *current;
 extern u8 k_reenter;
 
+#define NR_PROCS PROC_PG_NR
+#define FIRST_PROC proc_table[0]
+#define LAST_PROC proc_table[NR_PROCS - 1]
+
 void proc_init(pentry entry, char *name, u8 *s);
 void sched_init();
 void schedule();

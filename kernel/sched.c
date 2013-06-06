@@ -6,7 +6,7 @@
 #define STACK_SIZE (1024)
 
 struct tss   tss;
-struct proc proc_table[PROC_PG_NR];
+struct proc proc_table[NR_PROCS];
 struct proc *current;
 u8 k_reenter;
 
@@ -32,7 +32,7 @@ void ProcB()
 void proc_init(pentry entry, char *name, u8 *s)
 {
     int i = 0;
-    for (i = 0; i < PROC_PG_NR; i++)
+    for (i = 0; i < NR_PROCS; i++)
         if (!proc_table[i].used)
             break;
 
@@ -60,7 +60,7 @@ void proc_init(pentry entry, char *name, u8 *s)
     p->regs.esp = (u32)((u8 *)s + STACK_SIZE);
     p->regs.eflags = 0x3202;
 
-    p->priority = PROC_PG_NR / (i + 1);
+    p->priority = 25;
 }
 
 void sched_init()
@@ -76,7 +76,7 @@ void sched_init()
     );
     ltr();
 
-    memset(&proc_table, 0x0, PROC_PG_NR * sizeof(struct proc));
+    memset(&proc_table, 0x0, NR_PROCS * sizeof(struct proc));
     proc_init(ProcA, "Proc A", stackA);
     proc_init(ProcB, "Proc B", stackB);
 
@@ -87,20 +87,15 @@ void sched_init()
 void schedule()
 {
     int c = -1;
+    struct proc *p;
     while (TRUE) {
-        for (int i = 0; i < PROC_PG_NR; i++) {
-            struct proc *p = proc_table + i;
-            if (!p->used)
-                continue;
-            if (p->counter > c)
+        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
+            if (p->used && p->counter > c)
                 c = p->counter, current = p;
-        }
 
         if (c) break;
-        for (int i = 0; i < PROC_PG_NR; i++) {
-            struct proc *p = proc_table + i;
+        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
             if (p->used)
                 p->counter = p->priority;
-        }
     }
 }
