@@ -66,6 +66,7 @@ install: $(KERNEL_BIN)
 	@echo
 
 dep:
+	@$(MAKE_SUB) $(BOOT_DIR) $@
 	@$(MAKE_SUB) $(KERNEL_DIR) $@
 	@$(MAKE_SUB) $(LIB_DIR) $@
 
