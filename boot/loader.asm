@@ -25,12 +25,25 @@ START:
 
     call   r_reset_floppy
 
-    push   01h + LOADER_SECTOR_NR
-    push   KERNEL_BIN_SECTOR_NR
-    push   KERNEL_BIN_SEG
-    push   KERNEL_BIN_OFFSET
-    call   r_read_sector
-    add    esp, 8
+    mov    ax, 01h + LOADER_SECTOR_NR
+    mov    cx, KERNEL_BIN_SECTOR_NR
+    mov    bx, KERNEL_BIN_SEG
+    mov    dx, KERNEL_BIN_OFFSET
+    .loop:
+        push   ax
+        push   1
+        push   bx
+        push   dx
+        call   r_read_sector
+        add    esp, 8
+        inc    ax
+        add    dx, 512
+        jc     .1
+        jmp    .2
+        .1:
+            add    bx, 1000h
+        .2:
+            loop   .loop
 
     mov    ebx, 0
     mov    di, _MemChkBuf
