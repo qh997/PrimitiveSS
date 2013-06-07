@@ -32,7 +32,7 @@ struct proc {
     u16 sel_ldt;
     struct desc_seg ldt[LDT_SIZE];
 
-    u8 status;
+    int status;
 
     int priority;
     int counter;
@@ -56,8 +56,15 @@ extern u8 k_reenter;
 #define FIRST_PROC proc_table[0]
 #define LAST_PROC proc_table[NR_PROCS - 1]
 
+#define STATUS_RUNNING   0
+#define STATUS_SENDING   1
+#define STATUS_RECEIVING 2
+#define STATUS_INVALID   -1
+
 void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size);
 void sched_init();
 void schedule();
+
+#define pid2proc(pid) (&proc_table[pid])
 
 #endif

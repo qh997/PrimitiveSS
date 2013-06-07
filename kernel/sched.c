@@ -8,17 +8,33 @@ struct proc proc_table[NR_PROCS];
 struct proc *current;
 u8 k_reenter;
 
+void schedule()
+{
+    int c = -1;
+    struct proc *p;
+    while (TRUE) {
+        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
+            if ((p->status == STATUS_RUNNING) && (p->counter > c))
+                c = p->counter, current = p;
+
+        if (c) break;
+        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
+            if (p->status == STATUS_RUNNING)
+                p->counter = p->priority;
+    }
+}
+
 void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
 {
     int i = 0;
     for (i = 0; i < NR_PROCS; i++)
-        if (!proc_table[i].status)
+        if (proc_table[i].status == STATUS_INVALID)
             break;
 
     struct proc *p = (struct proc *)proc_table + i;
     memset(p, 0x0, sizeof(struct proc));
 
-    p->status = TRUE;
+    p->status = STATUS_RUNNING;
 
     p->ldt[INDEX_LDT_TEXT] = gdt[INDEX_TEXT];
     p->ldt[INDEX_LDT_TEXT].type_0 = DA_C | PRIVI_USER << 5;
@@ -56,23 +72,9 @@ void sched_init()
     ltr();
 
     memset(&proc_table, 0x0, NR_PROCS * sizeof(struct proc));
+    for (struct proc *p = &FIRST_PROC; p <= &LAST_PROC; p++)
+        p->status = STATUS_INVALID;
 
     k_reenter = 0;
     current = proc_table;
-}
-
-void schedule()
-{
-    int c = -1;
-    struct proc *p;
-    while (TRUE) {
-        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
-            if (p->status && p->counter > c)
-                c = p->counter, current = p;
-
-        if (c) break;
-        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
-            if (p->status)
-                p->counter = p->priority;
-    }
 }

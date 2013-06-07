@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "sys/protect.h"
 #include "sys/sched.h"
+#include "sys/syscall.h"
 
 void init()
 {

@@ -38,4 +38,6 @@ typedef int (*syscall_handler)();
         return (type) __res;             \
     }
 
+void syscall_init();
+
 #endif

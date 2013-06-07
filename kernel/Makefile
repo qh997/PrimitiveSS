@@ -28,6 +28,7 @@ OBJS += $(OUT_DIR)/main.o
 OBJS += $(OUT_DIR)/sched.o
 OBJS += $(OUT_DIR)/ints.o
 OBJS += $(OUT_DIR)/syscall.o
+OBJS += $(OUT_DIR)/proc.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
