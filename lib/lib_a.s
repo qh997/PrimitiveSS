@@ -2,6 +2,7 @@ extern  disp_pos
 
 [section .text]
 global  update_cursor
+global  syscall_tmp1
 
 update_cursor:
     push   ebx

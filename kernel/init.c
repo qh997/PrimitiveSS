@@ -11,4 +11,5 @@ void init()
     protect_init();
     trap_init();
     PIC8259A_init();
+    syscall_init();
 }

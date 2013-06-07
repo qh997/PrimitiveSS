@@ -10,7 +10,7 @@ struct desc_gate idt[NR_IDT];
 u8 gdtr[6];
 u8 idtr[6];
 
-static void init_idt_desc(unsigned char vector, u8 desc_type, void *handler, unsigned char privilege)
+void init_idt_desc(unsigned char vector, u8 desc_type, void *handler, unsigned char privilege)
 {
     struct desc_gate *p_gate = &idt[vector];
     u32 base = (u32)handler;

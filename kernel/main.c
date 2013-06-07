@@ -19,9 +19,16 @@ void ProcA()
 
 void ProcB()
 {
+    int a = 0x997;
+    int j = 0;
     while (1) {
         early_printk("B");
         for (int i = 0; i < 0xfffff; i++);
+        j++;
+        if (j == 8)
+            early_printk("(%x)", syscall_tmp1());
+        if (j == 14)
+            early_printk("(%x)", syscall_tmp3(0xa, 0xb, &a));
     }
 }
 

@@ -27,6 +27,7 @@ OBJS += $(OUT_DIR)/timer.o
 OBJS += $(OUT_DIR)/main.o
 OBJS += $(OUT_DIR)/sched.o
 OBJS += $(OUT_DIR)/ints.o
+OBJS += $(OUT_DIR)/syscall.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
@@ -89,7 +90,7 @@ $(OUT_DIR)/%.o: %.c
  ../include/sys/protect.h ../include/types.h ../include/stdio.h \
  ../include/types.h
 
-../out/kernel/clock.o: clock.c ../include/sys/interrupts.h \
+../out/kernel/timer.o: timer.c ../include/sys/interrupts.h \
  ../include/sys/proto.h ../include/types.h ../include/stdio.h \
  ../include/types.h ../include/sys/sched.h ../include/sys/protect.h \
  ../include/sys/system.h
@@ -101,6 +102,11 @@ $(OUT_DIR)/%.o: %.c
 ../out/kernel/sched.o: sched.c ../include/sys/sched.h \
  ../include/sys/protect.h ../include/types.h ../include/sys/system.h \
  ../include/stdio.h ../include/types.h ../include/string.h
+
+../out/kernel/syscall.o: syscall.c ../include/sys/interrupts.h \
+ ../include/sys/syscall.h ../include/types.h ../include/sys/protect.h \
+ ../include/sys/sched.h ../include/sys/system.h ../include/stdio.h \
+ ../include/types.h
 
 ../out/kernel/kernel.o: kernel.s ../include/boot/defs.inc
 

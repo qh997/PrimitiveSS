@@ -5,6 +5,7 @@ extern  current
 extern  tss
 extern  k_reenter
 extern  hwirq_table
+extern  syscall_table
 
 [section .text]
 global  disable_hwirq
@@ -26,6 +27,7 @@ global  hwint12
 global  hwint13
 global  hwint14
 global  hwint15
+global  int_syscall
 
 disable_hwirq:
     mov    ecx, [esp + 4]        ;# ecx = irq
@@ -175,3 +177,22 @@ restart_reenter:                         ;# 中断重入
     ALIGN  16
     hwint15:            ;#
         hwint_slave  15
+
+int_syscall:
+    call   save
+    sti
+
+    push   esi
+
+    push   edx
+    push   ecx
+    push   ebx
+    push   dword [current]
+    call   [syscall_table + eax * 4]
+    add    esp, 4 * 4
+
+    pop    esi
+    mov    [esi + EAXREG - P_STACKBASE], eax ;# 返回值，proc->regs.eax = eax
+
+    cli
+    ret ;# 此时将跳转至在 save 中 push 的地址（restart/restart_reenter）
