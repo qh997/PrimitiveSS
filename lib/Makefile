@@ -66,7 +66,9 @@ $(OUT_DIR)/%.o: %.c
 
 ### Dependencies ###
 ../out/lib/lib.o: lib.c ../include/types.h ../include/sys/global.h \
- ../include/sys/protect.h ../include/sys/proto.h
+ ../include/sys/protect.h ../include/sys/proto.h ../include/sys/proc.h \
+ ../include/sys/sched.h ../include/sys/system.h ../include/string.h \
+ ../include/types.h
 
 ../out/lib/printf.o: printf.c ../include/types.h ../include/sys/global.h \
  ../include/sys/protect.h ../include/sys/proto.h ../include/stdio.h \

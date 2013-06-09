@@ -26,28 +26,3 @@ u8 in_b(u16 port)
 
     return val;
 }
-
-int send_recv(int func, int src_dst, struct proc_msg *msg)
-{
-    int ret = -1;
-    if (func == RECV)
-        memset(msg, 0x0, sizeof(struct proc_msg));
-
-    switch (func) {
-        case SEND:
-        case RECV:
-            ret = pmsg_sendrecv(func, src_dst, msg);
-            break;
-
-        case BOTH:
-            ret = pmsg_sendrecv(SEND, src_dst, msg);
-            if (ret == 0)
-                ret = pmsg_sendrecv(RECV, src_dst, msg);
-            break;
-
-        default:
-            break;
-    }
-
-    return ret;
-}

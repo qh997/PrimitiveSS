@@ -48,14 +48,18 @@ int vsprintf(char *buf, const char *fmt, va_list args)
         switch (*fmt) {
             case 'x':
                 strcpy(p, uitoa(tmp, *((int *)p_next_arg), 16));
-                p_next_arg += 4;
                 p += strlen(tmp);
+                p_next_arg += 4;
                 break;
             case 'd':
                 strcpy(p, uitoa(tmp, *((int *)p_next_arg), 10));
-                p_next_arg += 4;
                 p += strlen(tmp);
+                p_next_arg += 4;
                 break;
+            case 's':
+                strcpy(p, *(char **)p_next_arg);
+                p += strlen(*(char **)p_next_arg);
+                p_next_arg += 4;
             default:
                 break;
         }

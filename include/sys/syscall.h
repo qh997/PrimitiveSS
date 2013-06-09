@@ -22,6 +22,22 @@ typedef int (*syscall_handler)();
         return (type) __res;             \
     }
 
+#define _syscall2(type, name, vect,      \
+                  typea, typeb)          \
+    type name(typea a, typeb b)          \
+    {                                    \
+        long __res;                      \
+        __asm__ volatile (               \
+            "int $0x80"                  \
+            : "=a" (__res)               \
+            : "0" (vect),                \
+              "b" ((long)(a)),           \
+              "c" ((long)(b)),           \
+              "d" ((long)(0))            \
+        );                               \
+        return (type) __res;             \
+    }
+
 #define _syscall3(type, name, vect,      \
                   typea, typeb, typec)   \
     type name(typea a, typeb b, typec c) \

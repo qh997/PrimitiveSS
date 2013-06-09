@@ -75,7 +75,8 @@ $(OUT_DIR)/%.o: %.c
 ../out/kernel/init.o: init.c ../include/sys/global.h \
  ../include/sys/protect.h ../include/types.h ../include/sys/proto.h \
  ../include/string.h ../include/types.h ../include/sys/interrupts.h \
- ../include/stdio.h ../include/sys/sched.h ../include/sys/system.h
+ ../include/stdio.h ../include/sys/sched.h ../include/sys/system.h \
+ ../include/sys/syscall.h
 
 ../out/kernel/global.o: global.c ../include/sys/protect.h \
  ../include/types.h
@@ -98,7 +99,7 @@ $(OUT_DIR)/%.o: %.c
 
 ../out/kernel/main.o: main.c ../include/stdio.h ../include/types.h \
  ../include/sys/sched.h ../include/sys/protect.h ../include/types.h \
- ../include/sys/system.h
+ ../include/sys/system.h ../include/sys/proc.h
 
 ../out/kernel/sched.o: sched.c ../include/sys/sched.h \
  ../include/sys/protect.h ../include/types.h ../include/sys/system.h \
@@ -106,8 +107,12 @@ $(OUT_DIR)/%.o: %.c
 
 ../out/kernel/syscall.o: syscall.c ../include/sys/interrupts.h \
  ../include/sys/syscall.h ../include/types.h ../include/sys/protect.h \
- ../include/sys/sched.h ../include/sys/system.h ../include/stdio.h \
- ../include/types.h
+ ../include/sys/sched.h ../include/sys/system.h ../include/sys/proc.h \
+ ../include/stdio.h ../include/types.h
+
+../out/kernel/proc.o: proc.c ../include/sys/proc.h ../include/types.h \
+ ../include/sys/sched.h ../include/sys/protect.h ../include/sys/system.h \
+ ../include/sys/syscall.h ../include/stdio.h ../include/types.h
 
 ../out/kernel/kernel.o: kernel.s ../include/boot/defs.inc
 

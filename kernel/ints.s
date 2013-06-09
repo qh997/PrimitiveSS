@@ -6,7 +6,9 @@ extern  tss
 extern  k_reenter
 extern  hwirq_table
 extern  syscall_table
+extern  disp_int
 
+bits  32
 [section .text]
 global  disable_hwirq
 global  enable_hwirq

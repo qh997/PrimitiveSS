@@ -12,10 +12,14 @@ void clock_handler()
 {
     jiffies++;
 
-    if (k_reenter)
+    if (current->counter)
+        current->counter--;
+
+    if (k_reenter != 0)
         return;
 
-    current->counter--;
+    if (current->counter > 0)
+        return;
 
     schedule();
 }

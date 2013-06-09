@@ -33,6 +33,7 @@ struct proc {
     struct desc_seg ldt[LDT_SIZE];
 
     int status;
+    size_t pid;
 
     int priority;
     int counter;
@@ -54,11 +55,11 @@ extern u8 k_reenter;
 
 #define NR_PROCS PROC_PG_NR
 #define FIRST_PROC proc_table[0]
-#define LAST_PROC proc_table[NR_PROCS - 1]
+#define LAST_PROC proc_table[NR_PROCS]
 
-#define STATUS_RUNNING   0
-#define STATUS_SENDING   1
-#define STATUS_RECEIVING 2
+#define STATUS_RUNNING    0
+#define STATUS_SENDING    1
+#define STATUS_RECEIVING  2
 #define STATUS_INVALID   -1
 
 void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size);

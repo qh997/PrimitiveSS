@@ -8,10 +8,13 @@
 #define RECV 2
 #define BOTH (SEND | RECV)
 
+#define ANY (NR_PROCS + 1)
+
 struct proc_msg {
 };
 
-int pmsg_sendrecv(int func, int srcdst, struct proc_msg *msg);
-int sys_sendrecv(struct proc *p, int func, int srcdst, struct proc_msg *msg);
+int pmsg_send(int dest, struct proc_msg *msg);
+int pmsg_receive(int source, struct proc_msg *msg);
+int send_recv(int func, int src_dst, struct proc_msg *msg);
 
 #endif
