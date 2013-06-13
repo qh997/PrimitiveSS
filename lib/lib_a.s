@@ -1,13 +1,9 @@
-INT_VECTOR_SYS_CALL  equ  0x80
-
 extern  disp_pos
 extern  disp_int
 
 bits  32
 [section .text]
 global  update_cursor
-global  pmsg_send
-global  pmsg_receive
 
 update_cursor:
     push   ebx
@@ -35,20 +31,4 @@ update_cursor:
 
     pop    edx
     pop    ebx
-    ret
-
-pmsg_send:
-    mov    eax, 1
-    mov    ebx, [esp + 4]
-    mov    ecx, [esp + 8]
-    mov    edx, 0
-    int    INT_VECTOR_SYS_CALL
-    ret
-
-pmsg_receive:
-    mov    eax, 2
-    mov    ebx, [esp + 4]
-    mov    ecx, [esp + 8]
-    mov    edx, 0
-    int    INT_VECTOR_SYS_CALL
     ret

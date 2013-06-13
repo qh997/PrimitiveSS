@@ -5,9 +5,12 @@
 
 void restart();
 
-#define STACK_SIZE (500 * 4)
+#define STACK_SIZE (1024)
 
 u8 stackA[STACK_SIZE];
+u8 stackB[STACK_SIZE];
+//u8 stackC[STACK_SIZE];
+//u8 stackD[STACK_SIZE];
 
 void ProcA()
 {
@@ -15,9 +18,9 @@ void ProcA()
     while (1) {
         early_printk("A");
         for (int i = 0; i < 0xfffff; i++);
-        if (j++ == 10) {
-            //pmsg_send(1, NULL);
-            send_recv(SEND, 1, NULL);
+        //early_printk("(A%d)", j);
+        if (j++ == 6) {
+            //send_recv(SEND, 1, NULL);
         }
     }
 }
@@ -30,11 +33,12 @@ void ProcB()
         early_printk("B");
         for (int i = 0; i < 0xfffff; i++);
         
-        if (j++ == 1) {
-            //pmsg_receive(ANY, NULL);
-            send_recv(RECV, ANY, NULL);
-            early_printk("bbb");
+        //early_printk("(B%d)", j);
+        if (j == 3) {
+            //send_recv(RECV, ANY, NULL);
+            early_printk("b");
         }
+        j++;
     }
 }
 
@@ -60,10 +64,10 @@ void kernel_main()
 
     sched_init();
 
-    proc_init(ProcA, "Proc A", 1, stackA, 512);
-    proc_init(ProcB, "Proc B", 10, stackA, 1024);
-    //proc_init(ProcC, "Proc C", 1, stackA, 1500);
-    //proc_init(ProcD, "Proc D", 1, stackA, 2000);
+    proc_init(ProcA, "Proc A", 400, stackA, STACK_SIZE);
+    proc_init(ProcB, "Proc B", 500, stackB, STACK_SIZE);
+    //proc_init(ProcC, "Proc C", 2, stackC, STACK_SIZE - 128 * 2);
+    //proc_init(ProcD, "Proc D", 3, stackA, STACK_SIZE - 128 * 3);
 
     restart();
 

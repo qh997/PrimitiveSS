@@ -5,6 +5,8 @@ hw_irq_handler hwirq_table[HWIRQ_NR];
 
 void PIC8259A_init()
 {
+    memset(hwirq_table, 0x0, sizeof(hw_irq_handler) * HWIRQ_NR);
+
     out_b(INT_M_CTL, 0x11);          // 主8259, ICW1
     out_b(INT_S_CTL, 0x11);          // 从8259, ICW1
     out_b(INT_M_CTLMASK, INT_PIC_M); // 主8259, ICW2

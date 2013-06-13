@@ -12,8 +12,8 @@ void schedule()
 {
     int c = -1;
     struct proc *p;
-    int old = current - &FIRST_PROC;
 
+    early_printk("[%d ", current - &FIRST_PROC);
     while (TRUE) {
         for (p = &FIRST_PROC; p < &LAST_PROC; p++)
             if ((p->status == STATUS_RUNNING) && (p->counter > c)) {
@@ -26,10 +26,7 @@ void schedule()
             if (p->status == STATUS_RUNNING)
                 p->counter = p->priority;
     }
-    int new = current - &FIRST_PROC;
-    if (old != new) {
-        //early_printk("[%x->%x]", old, new);
-    }
+    early_printk("%d %x]", current - &FIRST_PROC, current->regs.eip);
 }
 
 void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
@@ -39,7 +36,6 @@ void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
         if (proc_table[i].status == STATUS_INVALID)
             break;
 
-    early_printk("{%s}-pid(%d)", name, i);
     struct proc *p = (struct proc *)proc_table + i;
     memset(p, 0x0, sizeof(struct proc));
 
@@ -50,7 +46,6 @@ void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
     p->sel_ldt = SEL_1ST_LDT + (i << 3);
 
     set_desc_ldt(i, &proc_table[i].ldt);
-    early_printk("-ldt(%x)", gdt[INDEX_1ST_LDT + i]);
 
     p->regs.cs = SEL_LDT_TEXT | SA_TIL | PRIVI_USER;
     p->regs.ds =
@@ -58,17 +53,16 @@ void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
     p->regs.fs =
     p->regs.ss = SEL_LDT_DATA | SA_TIL | PRIVI_USER;
     p->regs.gs = (SEL_VIDO & SA_RPL_MASK) | PRIVI_USER;
-    early_printk("-cs(%x)-ss(%x)", p->regs.cs, p->regs.ss);
 
+    memset(stk, 0x0, stk_size);
     p->regs.eip = (u32)entry;
     p->regs.esp = (u32)(stk + stk_size);
     p->regs.eflags = 0x3202;
-    early_printk("-esp(%x)", p->regs.esp);
+    early_printk("%d(%x)\n", i, (u32)p->regs.eip);
 
     p->status = STATUS_RUNNING;
     p->priority = prior;
     p->pid = i;
-    early_printk("\n");
 }
 
 void sched_init()

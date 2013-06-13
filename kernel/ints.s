@@ -1,5 +1,4 @@
 %include  "boot/defs.inc"
-%include  "sys/ints.inc"
 
 extern  current
 extern  tss
@@ -85,6 +84,7 @@ enable_hwirq:
         popf
         ret
 
+%include  "sys/ints.inc"
 save:
     ;# 此时 eip/cs/eflags/esp/ss 已经压栈
     ;# call save 的返回地址也压栈，esp 指向 proc->regs.eax
