@@ -14,7 +14,7 @@ char *uitoa(char *buf, unsigned int val, int base)
         return buf;
     }
 
-    char tmp[64];
+    char tmp[STR_DEFAULT_LEN];
     char *t = tmp;
     while (rem || quo) {
         char dig = rem > 9 ? 'A' + rem - 10 : '0' + rem;

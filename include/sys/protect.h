@@ -122,7 +122,7 @@ extern u8 gdtr[];
 extern u8 idtr[];
 
 void init_desc(struct desc_seg *p_desc, u32 base, u32 limit, u16 attribute);
-void init_idt_desc(unsigned char vector, u8 desc_type, void *handler, unsigned char privilege);
+void set_idt_desc(unsigned char vec, u8 type, void *handler, u8 priv);
 void protect_init();
 
 #endif

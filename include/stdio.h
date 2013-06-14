@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#define STR_DEFAULT_LEN 1024
+#define STR_DEFAULT_LEN 64
 
 int vsprintf(char *buf, const char *fmt, va_list args);
 int sprintf(char *buf, const char *fmt, ...);

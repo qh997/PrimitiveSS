@@ -10,30 +10,9 @@ struct desc_gate idt[NR_IDT];
 u8 gdtr[6];
 u8 idtr[6];
 
-void init_idt_desc(unsigned char vector, u8 desc_type, void *handler, unsigned char privilege)
-{
-    struct desc_gate *p_gate = &idt[vector];
-    u32 base = (u32)handler;
-
-    p_gate->offset_0 = base & 0xFFFF;
-    p_gate->selector = SEL_TEXT;
-    p_gate->pcount   = 0;
-    p_gate->attr     = desc_type | (privilege << 5);
-    p_gate->offset_1 = (base >> 16) & 0xFFFF;
-}
-
 static void ignore_int()
 {
     early_printk("Unknown interrupt\n");
-}
-
-void register_irq_handler(int vector, void *handler)
-{
-    struct desc_gate *p_gate = &idt[vector];
-    u32 base = (u32)handler;
-
-    p_gate->offset_0 = base & 0xFFFF;
-    p_gate->offset_1 = (base >> 16) & 0xFFFF;
 }
 
 void init_desc(struct desc_seg *desc, u32 base, u32 limit, u16 type)
@@ -44,6 +23,27 @@ void init_desc(struct desc_seg *desc, u32 base, u32 limit, u16 type)
     desc->type_0         = type & 0xFF;
     desc->limit_1_type_1 = ((limit>>16) & 0x0F) | ((type>>8) & 0xF0);
     desc->base_2         = (base >> 24) & 0xFF;
+}
+
+void set_idt_desc(unsigned char vec, u8 type, void *handler, u8 priv)
+{
+    struct desc_gate *p_gate = &idt[vec];
+    u32 base = (u32)handler;
+
+    p_gate->offset_0 = base & 0xFFFF;
+    p_gate->selector = SEL_TEXT;
+    p_gate->pcount   = 0;
+    p_gate->attr     = type | (priv << 5);
+    p_gate->offset_1 = (base >> 16) & 0xFFFF;
+}
+
+void register_irq_handler(int vector, void *handler)
+{
+    struct desc_gate *p_gate = &idt[vector];
+    u32 base = (u32)handler;
+
+    p_gate->offset_0 = base & 0xFFFF;
+    p_gate->offset_1 = (base >> 16) & 0xFFFF;
 }
 
 void protect_init()
@@ -58,7 +58,7 @@ void protect_init()
     *(u32 *)(&idtr[2]) = (u32)&idt;
 
     for (int i = 0; i < NR_IDT; i++)
-        init_idt_desc(i, DA_386IGate, ignore_int, PRIVI_KRNL);
+        set_idt_desc(i, DA_386IGate, ignore_int, PRIVI_KRNL);
 
     for (int i = 3; i < 6; i++)
         idt[i].attr &= 0x9f | (PRIVI_USER << 5);

@@ -53,9 +53,9 @@ extern struct proc proc_table[];
 extern struct proc *current;
 extern u8 k_reenter;
 
-#define NR_PROCS PROC_PG_NR
+#define NR_PROCS   PROC_PG_NR
 #define FIRST_PROC proc_table[0]
-#define LAST_PROC proc_table[NR_PROCS]
+#define LAST_PROC  proc_table[NR_PROCS]
 
 #define STATUS_RUNNING    0
 #define STATUS_SENDING    1

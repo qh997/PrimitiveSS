@@ -29,7 +29,7 @@ int send_recv(int func, int src_dst, struct proc_msg *msg)
         default:
             break;
     }
-
+    early_printk("{%d}", func);
     return ret;
 }
 

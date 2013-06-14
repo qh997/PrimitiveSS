@@ -17,7 +17,7 @@ syscall_handler syscall_table[] = {
 
 void syscall_init()
 {
-    init_idt_desc(INT_SYSCALL, DA_386IGate, int_syscall, PRIVI_USER);
+    set_idt_desc(INT_SYSCALL, DA_386IGate, int_syscall, PRIVI_USER);
 }
 
 _syscall2(int, pmsg_send, 1, int, struct proc_msg *);

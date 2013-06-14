@@ -10,10 +10,11 @@ u8 k_reenter;
 
 void schedule()
 {
-    int c = -1;
+    int c = 0;
     struct proc *p;
 
-    early_printk("[%d ", current - &FIRST_PROC);
+    struct proc *old = current;
+
     while (TRUE) {
         for (p = &FIRST_PROC; p < &LAST_PROC; p++)
             if ((p->status == STATUS_RUNNING) && (p->counter > c)) {
@@ -22,11 +23,14 @@ void schedule()
             }
 
         if (c) break;
-        for (p = &FIRST_PROC; p <= &LAST_PROC; p++)
+        for (p = &FIRST_PROC; p < &LAST_PROC; p++)
             if (p->status == STATUS_RUNNING)
                 p->counter = p->priority;
     }
-    early_printk("%d %x]", current - &FIRST_PROC, current->regs.eip);
+    if (1|| old != current) {
+        early_printk("[%d %x", old - &FIRST_PROC, old->regs.eip);
+        early_printk(" %d %x]", current - &FIRST_PROC, current->regs.eip);
+    }
 }
 
 void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
@@ -58,7 +62,7 @@ void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
     p->regs.eip = (u32)entry;
     p->regs.esp = (u32)(stk + stk_size);
     p->regs.eflags = 0x3202;
-    early_printk("%d(%x)\n", i, (u32)p->regs.eip);
+    early_printk("%d(%x %x %x)\n", i, (u32)p->regs.eip, (u32)p, (u32)p->regs.esp);
 
     p->status = STATUS_RUNNING;
     p->priority = prior;
