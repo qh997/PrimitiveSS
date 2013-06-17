@@ -27,9 +27,10 @@ void schedule()
             if (p->status == STATUS_RUNNING)
                 p->counter = p->priority;
     }
-    if (1|| old != current) {
+
+    if (0 && old != current) {
         early_printk("[%d %x", old - &FIRST_PROC, old->regs.eip);
-        early_printk(" %d %x]", current - &FIRST_PROC, current->regs.eip);
+        early_printk(" %d %x %x]", current - &FIRST_PROC, current->regs.eip, current->regs.gs);
     }
 }
 
@@ -62,7 +63,7 @@ void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
     p->regs.eip = (u32)entry;
     p->regs.esp = (u32)(stk + stk_size);
     p->regs.eflags = 0x3202;
-    early_printk("%d(%x %x %x)\n", i, (u32)p->regs.eip, (u32)p, (u32)p->regs.esp);
+    early_printk("%d(%x %x %x %x)\n", i, (u32)p, (u32)p->regs.eip, (u32)p->regs.esp, (u32)p->regs.gs);
 
     p->status = STATUS_RUNNING;
     p->priority = prior;
@@ -87,5 +88,5 @@ void sched_init()
         p->status = STATUS_INVALID;
 
     k_reenter = 0;
-    current = proc_table;
+    current = proc_table + 1;
 }

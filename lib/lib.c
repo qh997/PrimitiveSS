@@ -17,7 +17,6 @@ int send_recv(int func, int src_dst, struct proc_msg *msg)
 
         case RECV:
             ret = pmsg_receive(src_dst, msg);
-            early_printk(" pmsg_receive ");
             break;
 
         case BOTH:
@@ -29,7 +28,7 @@ int send_recv(int func, int src_dst, struct proc_msg *msg)
         default:
             break;
     }
-    early_printk("{%d}", func);
+
     return ret;
 }
 

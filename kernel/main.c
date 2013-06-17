@@ -15,14 +15,14 @@ u8 stackD[STACK_SIZE];
 
 void ProcA()
 {
+    early_printk("[A]");
     int j = 0;
     while (1) {
         early_printk("A");
         for (int i = 0; i < 0xfffff; i++) ;
-        //early_printk("(A%d)", j);
-        if (j++ == 12) {
+        if (j++ == 16) {
             early_printk("1");
-            send_recv(SEND, 1, NULL);
+            send_recv(SEND, 0, NULL);
             early_printk("a");
         }
     }
@@ -30,19 +30,17 @@ void ProcA()
 
 void ProcB()
 {
-    early_printk("B");
+    early_printk("[B]");
     int j = 0;
     while (1) {
         early_printk("B");
         for (int i = 0; i < 0xfffff; i++);
-        
-        //early_printk("(B%d)", j);
-        if (j == 4) {
+
+        if (j++ == 0) {
             early_printk("2");
             send_recv(RECV, ANY, NULL);
             early_printk("b");
         }
-        j++;
     }
 }
 
@@ -68,8 +66,8 @@ void kernel_main()
 
     sched_init();
 
-    proc_init(ProcB, "Proc B", 20, stackB, STACK_SIZE);
-    proc_init(ProcA, "Proc A", 4, stackA, STACK_SIZE);
+    proc_init(ProcB, "Proc B", 8, stackB, STACK_SIZE);
+    proc_init(ProcA, "Proc A", 15, stackA, STACK_SIZE);
     proc_init(ProcC, "Proc C", 2, stackC, STACK_SIZE);
     proc_init(ProcD, "Proc D", 10, stackD, STACK_SIZE);
 

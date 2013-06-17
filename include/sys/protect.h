@@ -62,7 +62,7 @@
 #define NR_GDT (4 + 2 * PROC_PG_NR)
 #define NR_IDT 256
 
-#define LDT_SIZE 2
+#define NR_LDT 2
 #define INDEX_LDT_TEXT 0
 #define INDEX_LDT_DATA 1
 

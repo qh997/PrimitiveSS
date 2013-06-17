@@ -1,5 +1,6 @@
 #include "sys/proto.h"
 #include "sys/interrupts.h"
+#include "string.h"
 
 hw_irq_handler hwirq_table[HWIRQ_NR];
 

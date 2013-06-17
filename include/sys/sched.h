@@ -30,7 +30,7 @@ struct strackframe {
 struct proc {
     struct strackframe regs;
     u16 sel_ldt;
-    struct desc_seg ldt[LDT_SIZE];
+    struct desc_seg ldt[NR_LDT];
 
     int status;
     size_t pid;
@@ -44,7 +44,7 @@ struct proc {
     do { \
         init_desc(&gdt[n + INDEX_1ST_LDT], \
                   vtol(SEL_DATA, addr), \
-                  LDT_SIZE * sizeof(struct desc_seg) - 1, \
+                  NR_LDT * sizeof(struct desc_seg) - 1, \
                   DA_LDT \
                   ); \
     } while (0)
