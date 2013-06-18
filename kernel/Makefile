@@ -82,7 +82,8 @@ $(OUT_DIR)/%.o: %.c
  ../include/types.h
 
 ../out/kernel/PIC8259A.o: PIC8259A.c ../include/sys/proto.h \
- ../include/types.h ../include/sys/interrupts.h
+ ../include/types.h ../include/sys/interrupts.h ../include/string.h \
+ ../include/types.h
 
 ../out/kernel/protect.o: protect.c ../include/sys/protect.h \
  ../include/types.h ../include/sys/interrupts.h ../include/sys/global.h \
@@ -112,7 +113,8 @@ $(OUT_DIR)/%.o: %.c
 
 ../out/kernel/proc.o: proc.c ../include/sys/proc.h ../include/types.h \
  ../include/sys/sched.h ../include/sys/protect.h ../include/sys/system.h \
- ../include/sys/syscall.h ../include/stdio.h ../include/types.h
+ ../include/sys/syscall.h ../include/stdio.h ../include/types.h \
+ ../include/string.h
 
 ../out/kernel/kernel.o: kernel.s ../include/boot/defs.inc
 

@@ -72,7 +72,8 @@ $(OUT_DIR)/%.o: %.c
 
 ../out/lib/printf.o: printf.c ../include/types.h ../include/sys/global.h \
  ../include/sys/protect.h ../include/sys/proto.h ../include/stdio.h \
- ../include/types.h ../include/string.h ../include/sys/system.h
+ ../include/types.h ../include/string.h ../include/sys/system.h \
+ ../include/sys/sched.h
 
 ../out/lib/vsprintf.o: vsprintf.c ../include/types.h ../include/string.h \
  ../include/types.h ../include/stdio.h
