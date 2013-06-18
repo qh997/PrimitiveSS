@@ -34,7 +34,7 @@ void schedule()
     }
 }
 
-void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
+void new_proc(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
 {
     int i = 0;
     for (i = 0; i < NR_PROCS; i++)
@@ -77,7 +77,7 @@ void sched_init()
     tss.iobase = sizeof(struct tss);
     init_desc(
         &gdt[INDEX_TSS],
-        vtol(SEL_DATA, &tss),
+        vir2lin(gdt[INDEX_DATA], &tss),
         sizeof(struct tss) - 1,
         DA_386TSS
     );

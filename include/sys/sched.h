@@ -43,7 +43,7 @@ struct proc {
 #define set_desc_ldt(n, addr) \
     do { \
         init_desc(&gdt[n + INDEX_1ST_LDT], \
-                  vtol(SEL_DATA, addr), \
+                  vir2lin(gdt[INDEX_DATA], addr), \
                   NR_LDT * sizeof(struct desc_seg) - 1, \
                   DA_LDT \
                   ); \
@@ -62,10 +62,11 @@ extern u8 k_reenter;
 #define STATUS_RECEIVING  2
 #define STATUS_INVALID   -1
 
-void proc_init(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size);
+void new_proc(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size);
 void sched_init();
 void schedule();
 
 #define pid2proc(pid) (&proc_table[pid])
+#define proc2pid(proc) (proc - proc_table)
 
 #endif

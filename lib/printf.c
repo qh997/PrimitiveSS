@@ -9,7 +9,7 @@
 void disp_str(char *s)
 {
     for (; *s; s++) {
-        u8 *pos = (u8 *)vtol(SEL_VIDO, disp_pos);
+        u8 *pos = (u8 *)vir2lin(gdt[INDEX_VIDO], disp_pos);
         if (*s == '\n') {
             disp_pos = (disp_pos / 160 + 1) * 160;
             continue;

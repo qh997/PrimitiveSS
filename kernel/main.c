@@ -15,14 +15,17 @@ u8 stackD[STACK_SIZE];
 
 void ProcA()
 {
+    struct proc_msg msg;
+    msg.num = 999;
     early_printk("[A]");
     int j = 0;
     while (1) {
         early_printk("A");
         for (int i = 0; i < 0xfffff; i++) ;
-        if (j++ == 16) {
+        if (j++ == 3) {
+            msg.num = j;
             early_printk("1");
-            send_recv(SEND, 0, NULL);
+            send_recv(SEND, 0, &msg);
             early_printk("a");
         }
     }
@@ -30,16 +33,17 @@ void ProcA()
 
 void ProcB()
 {
+    struct proc_msg msg;
     early_printk("[B]");
     int j = 0;
     while (1) {
         early_printk("B");
         for (int i = 0; i < 0xfffff; i++);
 
-        if (j++ == 0) {
+        if (j++ == 10) {
             early_printk("2");
-            send_recv(RECV, ANY, NULL);
-            early_printk("b");
+            send_recv(RECV, ANY, &msg);
+            early_printk("b(%d)", msg.num);
         }
     }
 }
@@ -65,11 +69,12 @@ void kernel_main()
     early_printk("kernel start.\n");
 
     sched_init();
+    proc_init();
 
-    proc_init(ProcB, "Proc B", 8, stackB, STACK_SIZE);
-    proc_init(ProcA, "Proc A", 15, stackA, STACK_SIZE);
-    proc_init(ProcC, "Proc C", 2, stackC, STACK_SIZE);
-    proc_init(ProcD, "Proc D", 10, stackD, STACK_SIZE);
+    new_proc(ProcB, "Proc B", 15, stackB, STACK_SIZE);
+    new_proc(ProcA, "Proc A", 15, stackA, STACK_SIZE);
+    //new_proc(ProcC, "Proc C", 2, stackC, STACK_SIZE);
+    //new_proc(ProcD, "Proc D", 10, stackD, STACK_SIZE);
 
     restart();
 

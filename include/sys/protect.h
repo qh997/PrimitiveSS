@@ -125,4 +125,10 @@ void init_desc(struct desc_seg *p_desc, u32 base, u32 limit, u16 attribute);
 void set_idt_desc(unsigned char vec, u8 type, void *handler, u8 priv);
 void protect_init();
 
+#define desc_base(desc) \
+    ((u32)((desc.base_2 << 24) | \
+           (desc.base_1 << 16) | \
+           (desc.base_0)))
+#define vir2lin(desc, addr) ((u32)(desc_base(desc) + (u32)addr))
+
 #endif
