@@ -20,7 +20,7 @@ void ProcA()
     early_printk("[A]");
     int j = 0;
     while (1) {
-        early_printk("A");
+        //early_printk("A");
         for (int i = 0; i < 0xfffff; i++) ;
         if (j++ == 30) {
             msg.num = j;
@@ -37,7 +37,7 @@ void ProcB()
     early_printk("[B]");
     int j = 0;
     while (1) {
-        early_printk("B");
+        //early_printk("B");
         for (int i = 0; i < 0xfffff; i++);
 
         if (j++ == 1) {

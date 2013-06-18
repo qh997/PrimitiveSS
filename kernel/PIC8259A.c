@@ -20,6 +20,7 @@ void PIC8259A_init()
     out_b(INT_S_CTLMASK, 0xFF);      // 从8259, OCW1
 
     clock_init();
+    init_keyboard();
 }
 
 void register_hwirq_handler(int irq, hw_irq_handler handler)

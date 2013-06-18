@@ -26,10 +26,11 @@
 
 #define HWIRQ_NR          16
 #define HWIRQ_CLOCK        0
+#define HWIRQ_KEYBOARD     1
 
 #define INT_PIC_M         0x20
 #define INT_CLOCK         INT_PIC_M + HWIRQ_CLOCK
-#define INT_KEYBOARD      INT_PIC_M + 1
+#define INT_KEYBOARD      INT_PIC_M + HWIRQ_KEYBOARD
 #define INT_CASCADE       INT_PIC_M + 2  /* cascade enable for 2nd AT controller */
 #define INT_ETHER         INT_PIC_M + 3  /* default ethernet interrupt vector */
 #define INT_SECONDARY     INT_PIC_M + 3  /* RS232 interrupt vector for port 2 */
@@ -54,6 +55,7 @@ typedef void (*hw_irq_handler)();
 extern void PIC8259A_init();
 extern void trap_init();
 extern void clock_init();
+extern void init_keyboard();
 extern int disable_hwirq(int irq);
 extern void enable_hwirq(int irq);
 extern void register_irq_handler(int vector, void *handler);
