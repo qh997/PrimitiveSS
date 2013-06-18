@@ -22,7 +22,7 @@ void ProcA()
     while (1) {
         early_printk("A");
         for (int i = 0; i < 0xfffff; i++) ;
-        if (j++ == 3) {
+        if (j++ == 30) {
             msg.num = j;
             early_printk("1");
             send_recv(SEND, 0, &msg);
@@ -40,7 +40,7 @@ void ProcB()
         early_printk("B");
         for (int i = 0; i < 0xfffff; i++);
 
-        if (j++ == 10) {
+        if (j++ == 1) {
             early_printk("2");
             send_recv(RECV, ANY, &msg);
             early_printk("b(%d)", msg.num);
@@ -71,8 +71,8 @@ void kernel_main()
     sched_init();
     proc_init();
 
-    new_proc(ProcB, "Proc B", 15, stackB, STACK_SIZE);
-    new_proc(ProcA, "Proc A", 15, stackA, STACK_SIZE);
+    new_proc(ProcB, "Proc B", 15, stackB + STACK_SIZE);
+    new_proc(ProcA, "Proc A", 15, stackA + STACK_SIZE);
     //new_proc(ProcC, "Proc C", 2, stackC, STACK_SIZE);
     //new_proc(ProcD, "Proc D", 10, stackD, STACK_SIZE);
 

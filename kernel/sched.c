@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "string.h"
 
-struct tss   tss;
+struct tss tss;
 struct proc proc_table[NR_PROCS];
 struct proc *current;
 u8 k_reenter;
@@ -34,7 +34,7 @@ void schedule()
     }
 }
 
-void new_proc(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
+void new_proc(p_entry entry, char *name, int prior, u8 *stk_top)
 {
     int i = 0;
     for (i = 0; i < NR_PROCS; i++)
@@ -59,9 +59,8 @@ void new_proc(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size)
     p->regs.ss = SEL_LDT_DATA | SA_TIL | PRIVI_USER;
     p->regs.gs = (SEL_VIDO & SA_RPL_MASK) | PRIVI_USER;
 
-    memset(stk, 0x0, stk_size);
     p->regs.eip = (u32)entry;
-    p->regs.esp = (u32)(stk + stk_size);
+    p->regs.esp = (u32)(stk_top);
     p->regs.eflags = 0x3202;
     early_printk("%d(%x %x %x %x)\n", i, (u32)p, (u32)p->regs.eip, (u32)p->regs.esp, (u32)p->regs.gs);
 

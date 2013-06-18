@@ -62,7 +62,7 @@ extern u8 k_reenter;
 #define STATUS_RECEIVING  2
 #define STATUS_INVALID   -1
 
-void new_proc(p_entry entry, char *name, int prior, u8 *stk, size_t stk_size);
+void new_proc(p_entry entry, char *name, int prior, u8 *stk_top);
 void sched_init();
 void schedule();
 
