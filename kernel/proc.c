@@ -3,6 +3,7 @@
 #include "sys/sched.h"
 #include "stdio.h"
 #include "string.h"
+#include "types.h"
 
 struct msg_queue {
     u8 flag;
@@ -19,6 +20,11 @@ struct msg_queue msg_list[256];
 #define MQ_INVA 0
 #define MQ_SEND 1
 #define MQ_RECV 2
+
+void proc_init()
+{
+    memset(&msg_list, 0x0, 256 * sizeof(struct msg_queue));
+}
 
 static struct msg_queue *get_msg_to(struct proc *p)
 {
@@ -58,6 +64,8 @@ static void deliver_msg(struct msg_queue *d, struct msg_queue *s)
         (void *)proc2linear(s->from, s->msg),
         sizeof(struct proc_msg)
     );
+
+    d->flag = MQ_INVA;
 }
 
 int sys_pmsg_send(struct proc *p, int d, struct proc_msg *m)
@@ -105,7 +113,18 @@ int sys_pmsg_receive(struct proc *p, int s, struct proc_msg *m)
     return 0;
 }
 
-void proc_init()
+void inform_int(int pid)
 {
-    memset(&msg_list, 0x0, 256 * sizeof(struct msg_queue));
+    struct proc *p = pid2proc(pid);
+    if (p->status == STATUS_RECEIVING) {
+        struct msg_queue *mq = get_msg_to(p);
+        if (mq) {
+            mq->msg->type = INT;
+            p->status = STATUS_RUNNING;
+            mq->flag = MQ_INVA;
+        }
+    }
+    else {
+        p->income_int = TRUE;
+    }
 }

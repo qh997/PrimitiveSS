@@ -10,16 +10,22 @@
 
 #define ANY (NR_PROCS + 1)
 
+typedef enum msg_type {
+    INVALID = 0,
+    INT,
+    WRITE,
+} msgtype;
+
 struct proc_msg {
+    msgtype type;
     int num;
+    void *content;
 };
 
+void proc_init();
 int pmsg_send(int dest, struct proc_msg *msg);
 int pmsg_receive(int source, struct proc_msg *msg);
 int send_recv(int func, int src_dst, struct proc_msg *msg);
-void proc_init();
-
-#define proc2linear(pid, addr) \
-    ((u32)(vir2lin(pid2proc(pid)->ldt[INDEX_LDT_DATA], addr)))
+void inform_int(int pid);
 
 #endif

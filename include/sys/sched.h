@@ -3,6 +3,7 @@
 
 #include "sys/protect.h"
 #include "sys/system.h"
+#include "types.h"
 
 #define TASK_NAME_LEN (32)
 
@@ -39,6 +40,8 @@ struct proc {
 
     int priority;
     int counter;
+
+    bool income_int;
 };
 
 struct task {
@@ -72,11 +75,15 @@ extern u8 k_reenter;
 #define STATUS_RECEIVING  2
 #define STATUS_INVALID   -1
 
+#define TASK_TTY 0
+
 void new_proc(p_entry entry, char *name, int prior, u8 *stk_top);
 void sched_init();
 void schedule();
 
 #define pid2proc(pid) (&proc_table[pid])
 #define proc2pid(proc) (proc - proc_table)
+#define proc2linear(pid, addr) \
+    ((u32)(vir2lin(pid2proc(pid)->ldt[INDEX_LDT_DATA], addr)))
 
 #endif

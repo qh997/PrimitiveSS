@@ -9,6 +9,7 @@ typedef unsigned long long u64;
 typedef unsigned int       u32;
 typedef unsigned short     u16;
 typedef unsigned char      u8;
+typedef unsigned char      bool;
 
 typedef unsigned int size_t;
 typedef char *va_list;

@@ -2,6 +2,8 @@
 #include "tty/keymap.h"
 #include "sys/interrupts.h"
 #include "sys/proto.h"
+#include "sys/sched.h"
+#include "sys/proc.h"
 
 static struct s_kb kb_in;
 
@@ -61,6 +63,8 @@ void keyboard_handler()
         if (kb_in.p_head == kb_in.buf + KB_IN_BYTES)
             kb_in.p_head = kb_in.buf;
     }
+
+    inform_int(TASK_TTY);
 }
 
 void init_keyboard()

@@ -71,14 +71,15 @@ void new_proc(p_entry entry, char *name, int prior, u8 *stk_top)
                  (u32)p->regs.esp, (u32)p->regs.gs);
 }
 
-struct tss tss;
-
 void task_tty();
 extern u8 tty_stack[];
+
 #define TASK_NR 1
 struct task task_table[TASK_NR] = {
     {task_tty, tty_stack + DEFAULT_STACK_SIZE, "tty"},
 };
+
+struct tss tss;
 
 void sched_init()
 {
