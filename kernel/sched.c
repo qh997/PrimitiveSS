@@ -3,10 +3,9 @@
 #include "stdio.h"
 #include "string.h"
 
-struct tss tss;
+u8 k_reenter;
 struct proc proc_table[NR_PROCS];
 struct proc *current;
-u8 k_reenter;
 
 void schedule()
 {
@@ -62,12 +61,24 @@ void new_proc(p_entry entry, char *name, int prior, u8 *stk_top)
     p->regs.eip = (u32)entry;
     p->regs.esp = (u32)(stk_top);
     p->regs.eflags = 0x3202;
-    early_printk("%d(%x %x %x %x)\n", i, (u32)p, (u32)p->regs.eip, (u32)p->regs.esp, (u32)p->regs.gs);
 
     p->status = STATUS_RUNNING;
     p->priority = prior;
     p->pid = i;
+
+    early_printk("%s (%d){p:%x eip:%x esp:%x gs:%x}\n",
+                 name, i, (u32)p, (u32)p->regs.eip,
+                 (u32)p->regs.esp, (u32)p->regs.gs);
 }
+
+struct tss tss;
+
+void task_tty();
+extern u8 tty_stack[];
+#define TASK_NR 1
+struct task task_table[TASK_NR] = {
+    {task_tty, tty_stack + DEFAULT_STACK_SIZE, "tty"},
+};
 
 void sched_init()
 {
@@ -86,6 +97,9 @@ void sched_init()
     for (struct proc *p = &FIRST_PROC; p < &LAST_PROC; p++)
         p->status = STATUS_INVALID;
 
+    for (struct task *t = task_table; t < task_table + TASK_NR; t++)
+        new_proc(t->eip, t->name, 50, t->esp);
+
     k_reenter = 0;
-    current = proc_table + 1;
+    current = proc_table;
 }

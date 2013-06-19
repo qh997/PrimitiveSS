@@ -25,7 +25,7 @@ void ProcA()
         if (j++ == 30) {
             msg.num = j;
             early_printk("1");
-            send_recv(SEND, 0, &msg);
+            send_recv(SEND, 1, &msg);
             early_printk("a");
         }
     }
@@ -71,8 +71,8 @@ void kernel_main()
     sched_init();
     proc_init();
 
-    new_proc(ProcB, "Proc B", 15, stackB + STACK_SIZE);
-    new_proc(ProcA, "Proc A", 15, stackA + STACK_SIZE);
+    new_proc(ProcB, "Proc B", 35, stackB + STACK_SIZE);
+    new_proc(ProcA, "Proc A", 30, stackA + STACK_SIZE);
     //new_proc(ProcC, "Proc C", 2, stackC, STACK_SIZE);
     //new_proc(ProcD, "Proc D", 10, stackD, STACK_SIZE);
 

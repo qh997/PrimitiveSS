@@ -4,6 +4,8 @@
 #include "sys/protect.h"
 #include "sys/system.h"
 
+#define TASK_NAME_LEN (32)
+
 typedef void (*p_entry)();
 
 struct strackframe {
@@ -39,6 +41,12 @@ struct proc {
     int counter;
 };
 
+struct task {
+    p_entry eip;
+    u8 *esp;
+    char name[TASK_NAME_LEN];
+};
+
 #define ltr() __asm__("ltr %%ax"::"a" (SEL_TSS))
 #define set_desc_ldt(n, addr) \
     do { \
@@ -56,6 +64,8 @@ extern u8 k_reenter;
 #define NR_PROCS   PROC_PG_NR
 #define FIRST_PROC proc_table[0]
 #define LAST_PROC  proc_table[NR_PROCS]
+
+#define DEFAULT_STACK_SIZE (0x4000)
 
 #define STATUS_RUNNING    0
 #define STATUS_SENDING    1
