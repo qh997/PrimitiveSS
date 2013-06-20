@@ -18,6 +18,8 @@ typedef enum msg_type {
 
 struct proc_msg {
     msgtype type;
+    int sender;
+
     int num;
     void *content;
 };

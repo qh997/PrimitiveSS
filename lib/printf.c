@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "sys/system.h"
+#include "sys/proc.h"
 
 void disp_str(char *s)
 {
@@ -35,6 +36,23 @@ int early_printk(const char *fmt, ...)
     va_list arg = (va_list)((void **)&fmt + 1);
     i = vsprintf(buf, fmt, arg);
     disp_str(buf);
+
+    return i;
+}
+
+int printk(const char *fmt, ...)
+{
+    int i;
+    char buf[STR_DEFAULT_LEN];
+    va_list arg = (va_list)((void **)&fmt + 1);
+    i = vsprintf(buf, fmt, arg);
+
+    struct proc_msg msg;
+    msg.type = WRITE;
+    msg.num = 0;
+    msg.content = buf;
+
+    send_recv(SEND, TASK_TTY, &msg);
 
     return i;
 }

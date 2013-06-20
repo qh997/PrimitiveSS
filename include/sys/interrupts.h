@@ -61,4 +61,7 @@ extern void enable_hwirq(int irq);
 extern void register_irq_handler(int vector, void *handler);
 extern void register_hwirq_handler(int irq, hw_irq_handler handler);
 
+#define disable_int() do {__asm__("cli":::);} while (0)
+#define enable_int() do {__asm__("sti":::);} while (0)
+
 #endif

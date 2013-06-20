@@ -49,12 +49,19 @@ static int msg_queue_insert(u8 f, int fm, int to, struct proc_msg *m)
     if (mq == &MSGLIST_START)
         return -1;
 
+    memset(mq, 0, sizeof(struct msg_queue));
+
     mq->flag = f;
     mq->from = fm;
     mq->to = to;
     mq->msg = m;
 
     return 0;
+}
+
+static inline void free_mq(struct msg_queue *mq)
+{
+    mq->flag = MQ_INVA;
 }
 
 static void deliver_msg(struct msg_queue *d, struct msg_queue *s)
@@ -65,13 +72,15 @@ static void deliver_msg(struct msg_queue *d, struct msg_queue *s)
         sizeof(struct proc_msg)
     );
 
-    d->flag = MQ_INVA;
+    free_mq(d);
+    free_mq(s);
 }
 
 int sys_pmsg_send(struct proc *p, int d, struct proc_msg *m)
 {
     struct proc *pd = pid2proc(d);
     struct msg_queue *tod = get_msg_to(pd);
+    ((struct proc_msg *)proc2linear(proc2pid(p), m))->sender = proc2pid(p);
 
     if (tod) {
         struct msg_queue src = {

@@ -4,6 +4,7 @@
 #include "sys/proto.h"
 #include "sys/sched.h"
 #include "sys/proc.h"
+#include "tty/tty.h"
 
 static struct s_kb kb_in;
 

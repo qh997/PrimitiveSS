@@ -4,6 +4,7 @@
 #include "tty/tty.h"
 #include "types.h"
 #include "string.h"
+#include "tty/keyboard.h"
 
 u8 tty_stack[DEFAULT_STACK_SIZE];
 struct tty tty_table[NR_CONSOLES];
@@ -17,35 +18,38 @@ void tty_init()
     memset(tty_table, 0, NR_CONSOLES * sizeof(struct tty));
 
     for (int i = 0; i < NR_CONSOLES; i++) {
-        tty_table[i].con = get_console(i);
+        tty_table[i].console = get_console(i);
     }
 }
 
-static void tty_do_read(struct tty *t)
+static void tty_write(struct tty *tty, struct proc_msg *msg)
 {
-}
+    char buf;
+    char *pbuf = (char *)proc2linear(msg->sender, msg->content);
 
-static void tty_do_write(struct tty *t)
-{
+    while (*pbuf) {
+        memcpy(
+            (void *)proc2linear(TASK_TTY, &buf),
+            (void *)pbuf,
+            1
+        );
+        output_char(tty->console, buf);
+        pbuf++;
+    }
 }
 
 void task_tty()
 {
-    early_printk("tty task\n");
     tty_init();
 
     struct proc_msg msg;
 
     while (TRUE) {
-        for (struct tty *t = TTY_1ST; t < TTY_END; t++) {
-            tty_do_read(t);
-            tty_do_write(t);
-        }
-
         send_recv(RECV, ANY, &msg);
 
         switch (msg.type) {
             case WRITE:
+                tty_write(&tty_table[msg.num], &msg);
                 break;
 
             case INT:
