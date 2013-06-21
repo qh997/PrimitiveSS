@@ -18,15 +18,18 @@ void console_init()
     memset(console_table, 0, NR_CONSOLES * sizeof(struct console));
 
     int per_con_size = DISPLAY_SIZE / NR_CONSOLES;
+    int buf_com = (per_con_size % SCREEN_WIDTH) ? 0 : SCREEN_WIDTH / 3;
+
 
     for (int i = 0; i < NR_CONSOLES; i++) {
         struct console *con = &console_table[i];
         con->cons_start = per_con_size * i;
-        con->cons_size = per_con_size;
+        con->cons_size = per_con_size - buf_com;
 
         //con->crnt_pos =
-        con->scrn_start =
+        con->scrn_start = con->cons_start;
         con->cursor = con->cons_start;
+        con->is_full = FALSE;
     }
 
     //CON_1ST->crnt_pos = disp_pos / 2;
@@ -53,7 +56,7 @@ void scroll_screen(struct console *cons, bool dir)
 
 }
 
-static void set_cursor(unsigned int position)
+static void set_cursor(u32 position)
 {
     disable_int();
     out_b(CRTC_ADDR_REG, CURSOR_H);
@@ -96,6 +99,18 @@ void output_char(struct console *cons, char ch)
             cons->cursor++;
             break;
     }
+
+    cursor_y = (cons->cursor - cons->scrn_start) / SCREEN_WIDTH;
+    if (cursor_y >= SCREEN_LENGTH)
+        cons->scrn_start += 80;
+
+    /*if (!cons->is_full && (cursor_y * (SCREEN_WIDTH + 1) > cons->cons_size))
+        cons->is_full = TRUE;
+
+    if (cons->is_full && (cursor_y > SCREEN_LENGTH))
+        cons->cursor -= SCREEN_WIDTH;
+    else if ((!cons->is_full) && (cursor_y > SCREEN_LENGTH))
+        cons->scrn_start += SCREEN_WIDTH;*/
 
     flush();
 }

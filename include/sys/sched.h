@@ -65,8 +65,8 @@ extern struct proc *current;
 extern u8 k_reenter;
 
 #define NR_PROCS   PROC_PG_NR
-#define FIRST_PROC proc_table[0]
-#define LAST_PROC  proc_table[NR_PROCS]
+#define FIRST_PROC (proc_table)
+#define LAST_PROC  (proc_table + NR_PROCS)
 
 #define DEFAULT_STACK_SIZE (0x4000)
 

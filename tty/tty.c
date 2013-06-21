@@ -27,6 +27,7 @@ static void tty_write(struct tty *tty, struct proc_msg *msg)
     char buf;
     char *pbuf = (char *)proc2linear(msg->sender, msg->content);
 
+    output_char(tty->console, msg->sender + '0');
     while ((*(char *)proc2linear(TASK_TTY, &buf) = *(char *)pbuf++)) {
         output_char(tty->console, buf);
     }

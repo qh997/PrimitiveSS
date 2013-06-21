@@ -15,21 +15,21 @@ void schedule()
     struct proc *old = current;
 
     while (TRUE) {
-        for (p = &FIRST_PROC; p < &LAST_PROC; p++)
+        for (p = FIRST_PROC; p < LAST_PROC; p++)
             if ((p->status == STATUS_RUNNING) && (p->counter > c)) {
                 c = p->counter;
                 current = p;
             }
 
         if (c) break;
-        for (p = &FIRST_PROC; p < &LAST_PROC; p++)
+        for (p = FIRST_PROC; p < LAST_PROC; p++)
             if (p->status == STATUS_RUNNING)
                 p->counter = p->priority;
     }
 
-    if (0 && old != current) {
-        early_printk("[%d %x", old - &FIRST_PROC, old->regs.eip);
-        early_printk(" %d %x %x]", current - &FIRST_PROC, current->regs.eip, current->regs.gs);
+    if (old != current) {
+        early_printk("[%d %x", old - FIRST_PROC, old->regs.eip);
+        early_printk(" %d %x]", current - FIRST_PROC, current->regs.eip, current->regs.gs);
     }
 }
 
@@ -64,6 +64,7 @@ void new_proc(p_entry entry, char *name, int prior, u8 *stk_top)
 
     p->status = STATUS_RUNNING;
     p->priority = prior;
+    p->counter = prior;
     p->pid = i;
 
     early_printk("%s (%d){p:%x eip:%x esp:%x gs:%x}\n",
@@ -95,11 +96,11 @@ void sched_init()
     ltr();
 
     memset(&proc_table, 0x0, NR_PROCS * sizeof(struct proc));
-    for (struct proc *p = &FIRST_PROC; p < &LAST_PROC; p++)
+    for (struct proc *p = FIRST_PROC; p < LAST_PROC; p++)
         p->status = STATUS_INVALID;
 
     for (struct task *t = task_table; t < task_table + TASK_NR; t++)
-        new_proc(t->eip, t->name, 50, t->esp);
+        new_proc(t->eip, t->name, 10, t->esp);
 
     k_reenter = 0;
     current = proc_table;

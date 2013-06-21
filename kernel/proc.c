@@ -16,6 +16,8 @@ struct msg_queue {
 struct msg_queue msg_list[256];
 #define MSGLIST_START msg_list[0]
 #define MSGLIST_END   msg_list[255]
+#define MSGLIST_1ST   (msg_list)
+#define MSGLIST_LAST  (msg_list + 256)
 
 #define MQ_INVA 0
 #define MQ_SEND 1
@@ -24,16 +26,18 @@ struct msg_queue msg_list[256];
 void proc_init()
 {
     memset(&msg_list, 0x0, 256 * sizeof(struct msg_queue));
+    early_printk("msg_list(%x, %x)\n", msg_list, sizeof(struct msg_queue));
+    msg_head = MSGLIST_1ST - 1;
 }
 
 static struct msg_queue *get_msg_to(struct proc *p)
 {
     struct msg_queue *mq;
-    for (mq = &MSGLIST_END; mq > &MSGLIST_START; mq--)
+    for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
         if (mq->flag != MQ_INVA && mq->to == proc2pid(p))
             break;
 
-    if (mq == &MSGLIST_START)
+    if (mq == MSGLIST_LAST)
         return NULL;
     else
         return mq;
@@ -41,12 +45,33 @@ static struct msg_queue *get_msg_to(struct proc *p)
 
 static int msg_queue_insert(u8 f, int fm, int to, struct proc_msg *m)
 {
-    struct msg_queue *mq;
-    for (mq = &MSGLIST_END; mq > &MSGLIST_START; mq--)
+    struct msg_queue *msg_head_old = msg_head;
+    do {
+        msg_head++;
+        if (msg_head == MSGLIST_LAST)
+            msg_head = MSGLIST_1ST;
+        if (msg_head->flag == MQ_INVA)
+            break;
+    } while (msg_head_old != msg_head);
+early_printk("msg_head(%d)", msg_head - MSGLIST_1ST);
+    if (msg_head_old == msg_head)
+        return -1;
+
+    memset(msg_head, 0, sizeof(struct msg_queue));
+
+    msg_head->flag = f;
+    msg_head->from = fm;
+    msg_head->to = to;
+    msg_head->msg = m;
+
+    return 0;
+
+    /*struct msg_queue *mq;
+    for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
         if (mq->flag == MQ_INVA)
             break;
 
-    if (mq == &MSGLIST_START)
+    if (mq == MSGLIST_LAST)
         return -1;
 
     memset(mq, 0, sizeof(struct msg_queue));
@@ -56,7 +81,7 @@ static int msg_queue_insert(u8 f, int fm, int to, struct proc_msg *m)
     mq->to = to;
     mq->msg = m;
 
-    return 0;
+    return 0;*/
 }
 
 static inline void free_mq(struct msg_queue *mq)

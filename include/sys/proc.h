@@ -10,15 +10,15 @@
 
 #define ANY (NR_PROCS + 1)
 
-typedef enum msg_type {
+enum msg_type {
     INVALID = 0,
     RECEIPT,
     INT,
     WRITE,
-} msgtype;
+};
 
 struct proc_msg {
-    msgtype type;
+    int type;
     int sender;
 
     int num;

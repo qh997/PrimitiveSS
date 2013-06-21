@@ -3,9 +3,9 @@
 
 #include "types.h"
 
+#define DISPLAY_SIZE  (0x10000 / 2)
 #define SCREEN_LENGTH 25
 #define SCREEN_WIDTH  80
-#define DISPLAY_SIZE  (0x10000 / 2)
 
 #define NR_CONSOLES 3
 
@@ -25,6 +25,8 @@ struct console {
     //int crnt_pos;
     int scrn_start;
     int cursor;
+
+    bool is_full;
 };
 
 void console_init();
