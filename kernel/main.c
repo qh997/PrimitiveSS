@@ -18,16 +18,15 @@ void ProcA()
     struct proc_msg msg;
     msg.num = 999;
     printk("[A]");
-    printk("12");
     int j = 0;
     while (1) {
-        //printk("A");
+        printk("A");
         for (int i = 0; i < 0xfffff; i++) ;
         if (j++ == 30) {
             msg.num = j;
-            //printk("1");
+            printk("1");
             send_recv(SEND, 1, &msg);
-            //printk("a");
+            printk("a");
         }
     }
 }
@@ -35,16 +34,16 @@ void ProcA()
 void ProcB()
 {
     struct proc_msg msg;
-    //printk("[B]");
+    printk("[B]");
     int j = 0;
     while (1) {
-        //printk("B");
+        printk("B");
         for (int i = 0; i < 0xfffff; i++);
 
         if (j++ == 1) {
-            //printk("2");
+            printk("2");
             send_recv(RECV, ANY, &msg);
-            //printk("b(%d)", msg.num);
+            printk("b(%d)", msg.num);
         }
     }
 }

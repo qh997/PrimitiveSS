@@ -12,6 +12,7 @@
 
 typedef enum msg_type {
     INVALID = 0,
+    RECEIPT,
     INT,
     WRITE,
 } msgtype;

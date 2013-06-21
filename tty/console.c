@@ -30,7 +30,7 @@ void console_init()
     }
 
     //CON_1ST->crnt_pos = disp_pos / 2;
-    CON_1ST->cursor = disp_pos / 2 + 160;
+    CON_1ST->cursor = disp_pos / 2;
 
     current_console = console_table;
 }

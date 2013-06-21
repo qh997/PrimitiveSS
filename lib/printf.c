@@ -52,7 +52,7 @@ int printk(const char *fmt, ...)
     msg.num = 0;
     msg.content = buf;
 
-    send_recv(SEND, TASK_TTY, &msg);
+    send_recv(BOTH, TASK_TTY, &msg);
 
     return i;
 }
