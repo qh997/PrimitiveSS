@@ -16,7 +16,6 @@ u8 stackD[STACK_SIZE];
 void ProcA()
 {
     while (1) {
-        //early_printk("A");
         printk("[A]");
         for (int i = 0; i < 0xfffff; i++);
     }
@@ -25,7 +24,6 @@ void ProcA()
 void ProcB()
 {
     while (1) {
-        //early_printk("B");
         printk("[B]");
         for (int i = 0; i < 0xfffff; i++);
     }
@@ -34,7 +32,6 @@ void ProcB()
 void ProcC()
 {
     while (1) {
-        //early_printk("C");
         printk("[C]");
         for (int i = 0; i < 0xfffff; i++);
     }
@@ -43,7 +40,6 @@ void ProcC()
 void ProcD()
 {
     while (1) {
-        //early_printk("D");
         printk("[D]");
         for (int i = 0; i < 0xfffff; i++);
     }

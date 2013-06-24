@@ -12,8 +12,6 @@ void schedule()
     int c = 0;
     struct proc *p;
 
-    struct proc *old = current;
-
     while (TRUE) {
         for (p = FIRST_PROC; p < LAST_PROC; p++)
             if ((p->status == STATUS_RUNNING) && (p->counter > c)) {
@@ -25,11 +23,6 @@ void schedule()
         for (p = FIRST_PROC; p < LAST_PROC; p++)
             if (p->status == STATUS_RUNNING)
                 p->counter = p->priority;
-    }
-
-    if (old != current) {
-        //early_printk("[%d %x", old - FIRST_PROC, old->regs.eip);
-        //early_printk(" %d %x]", current - FIRST_PROC, current->regs.eip, current->regs.gs);
     }
 }
 

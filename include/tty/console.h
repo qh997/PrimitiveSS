@@ -22,7 +22,6 @@ struct console {
     int cons_start;
     int cons_size;
 
-    //int crnt_pos;
     int scrn_start;
     int cursor;
 

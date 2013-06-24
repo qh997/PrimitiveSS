@@ -26,13 +26,11 @@ void console_init()
         con->cons_start = per_con_size * i;
         con->cons_size = per_con_size - buf_com;
 
-        //con->crnt_pos =
         con->scrn_start = con->cons_start;
         con->cursor = con->cons_start;
         con->is_full = FALSE;
     }
 
-    //CON_1ST->crnt_pos = disp_pos / 2;
     CON_1ST->cursor = disp_pos / 2;
 
     current_console = console_table;
@@ -102,7 +100,7 @@ void output_char(struct console *cons, char ch)
 
     cursor_y = (cons->cursor - cons->scrn_start) / SCREEN_WIDTH;
     if (cursor_y >= SCREEN_LENGTH)
-        cons->scrn_start += 80;
+        cons->scrn_start += SCREEN_WIDTH;
 
     /*if (!cons->is_full && (cursor_y * (SCREEN_WIDTH + 1) > cons->cons_size))
         cons->is_full = TRUE;
