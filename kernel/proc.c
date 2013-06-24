@@ -27,14 +27,27 @@ void proc_init()
 {
     memset(&msg_list, 0x0, 256 * sizeof(struct msg_queue));
     early_printk("msg_list(%x, %x)\n", msg_list, sizeof(struct msg_queue));
-    msg_head = MSGLIST_1ST - 1;
+    msg_head = MSGLIST_LAST - 1;
 }
 
-static struct msg_queue *get_msg_to(struct proc *p)
+static struct msg_queue *get_recver_msg(struct proc *p)
 {
     struct msg_queue *mq;
     for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
-        if (mq->flag != MQ_INVA && mq->to == proc2pid(p))
+        if (mq->flag == MQ_RECV && mq->to == proc2pid(p))
+            break;
+
+    if (mq == MSGLIST_LAST)
+        return NULL;
+    else
+        return mq;
+}
+
+static struct msg_queue *get_sender_msg(struct proc *p)
+{
+    struct msg_queue *mq;
+    for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
+        if (mq->flag == MQ_SEND && mq->to == proc2pid(p))
             break;
 
     if (mq == MSGLIST_LAST)
@@ -50,10 +63,8 @@ static int msg_queue_insert(u8 f, int fm, int to, struct proc_msg *m)
         msg_head++;
         if (msg_head == MSGLIST_LAST)
             msg_head = MSGLIST_1ST;
-        if (msg_head->flag == MQ_INVA)
-            break;
-    } while (msg_head_old != msg_head);
-early_printk("msg_head(%d)", msg_head - MSGLIST_1ST);
+    } while (msg_head_old != msg_head && msg_head->flag != MQ_INVA);
+
     if (msg_head_old == msg_head)
         return -1;
 
@@ -65,23 +76,6 @@ early_printk("msg_head(%d)", msg_head - MSGLIST_1ST);
     msg_head->msg = m;
 
     return 0;
-
-    /*struct msg_queue *mq;
-    for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
-        if (mq->flag == MQ_INVA)
-            break;
-
-    if (mq == MSGLIST_LAST)
-        return -1;
-
-    memset(mq, 0, sizeof(struct msg_queue));
-
-    mq->flag = f;
-    mq->from = fm;
-    mq->to = to;
-    mq->msg = m;
-
-    return 0;*/
 }
 
 static inline void free_mq(struct msg_queue *mq)
@@ -104,7 +98,7 @@ static void deliver_msg(struct msg_queue *d, struct msg_queue *s)
 int sys_pmsg_send(struct proc *p, int d, struct proc_msg *m)
 {
     struct proc *pd = pid2proc(d);
-    struct msg_queue *tod = get_msg_to(pd);
+    struct msg_queue *tod = get_recver_msg(pd);
     ((struct proc_msg *)proc2linear(proc2pid(p), m))->sender = proc2pid(p);
 
     if (tod) {
@@ -120,6 +114,8 @@ int sys_pmsg_send(struct proc *p, int d, struct proc_msg *m)
     }
     else {
         msg_queue_insert(MQ_SEND, proc2pid(p), d, m);
+        p->status = STATUS_SENDING;
+        schedule();
     }
 
     return 0;
@@ -127,7 +123,7 @@ int sys_pmsg_send(struct proc *p, int d, struct proc_msg *m)
 
 int sys_pmsg_receive(struct proc *p, int s, struct proc_msg *m)
 {
-    struct msg_queue *tome = get_msg_to(p);
+    struct msg_queue *tome = get_sender_msg(p);
     if (tome) {
         struct msg_queue dst = {
             flag:MQ_RECV,
@@ -137,6 +133,7 @@ int sys_pmsg_receive(struct proc *p, int s, struct proc_msg *m)
             next:NULL,
         };
         deliver_msg(&dst, tome);
+        pid2proc(tome->from)->status = STATUS_RUNNING;
     }
     else {
         msg_queue_insert(MQ_RECV, s, proc2pid(p), m);
@@ -151,7 +148,7 @@ void inform_int(int pid)
 {
     struct proc *p = pid2proc(pid);
     if (p->status == STATUS_RECEIVING) {
-        struct msg_queue *mq = get_msg_to(p);
+        struct msg_queue *mq = get_recver_msg(p);
         if (mq) {
             mq->msg->type = INT;
             p->status = STATUS_RUNNING;

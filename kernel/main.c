@@ -19,7 +19,6 @@ void ProcA()
         //early_printk("A");
         printk("[A]");
         for (int i = 0; i < 0xfffff; i++);
-        printk("[a]");
     }
 }
 
@@ -60,7 +59,7 @@ void kernel_main()
     new_proc(ProcA, "Proc A", 30, stackA + STACK_SIZE);
     new_proc(ProcB, "Proc B", 30, stackB + STACK_SIZE);
     new_proc(ProcC, "Proc C", 30, stackC + STACK_SIZE);
-    //new_proc(ProcD, "Proc D", 30, stackD + STACK_SIZE);
+    new_proc(ProcD, "Proc D", 30, stackD + STACK_SIZE);
 
     restart();
 

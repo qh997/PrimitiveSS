@@ -28,8 +28,8 @@ void schedule()
     }
 
     if (old != current) {
-        early_printk("[%d %x", old - FIRST_PROC, old->regs.eip);
-        early_printk(" %d %x]", current - FIRST_PROC, current->regs.eip, current->regs.gs);
+        //early_printk("[%d %x", old - FIRST_PROC, old->regs.eip);
+        //early_printk(" %d %x]", current - FIRST_PROC, current->regs.eip, current->regs.gs);
     }
 }
 
@@ -104,4 +104,6 @@ void sched_init()
 
     k_reenter = 0;
     current = proc_table;
+
+    early_printk("proc_table(%x %x)", proc_table, sizeof(struct proc));
 }
