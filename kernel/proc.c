@@ -11,7 +11,7 @@ struct msg_queue {
     int to;
     struct proc_msg *msg;
     struct msg_queue *next;
-} *msg_head = NULL;
+} *msg_head, *msg_tail = NULL;
 
 struct msg_queue msg_list[256];
 #define MSGLIST_START msg_list[0]
@@ -26,61 +26,89 @@ struct msg_queue msg_list[256];
 void proc_init()
 {
     memset(&msg_list, 0x0, 256 * sizeof(struct msg_queue));
-    early_printk("msg_list(%x, %x)\n", msg_list, sizeof(struct msg_queue));
-    msg_head = MSGLIST_LAST - 1;
+
+    msg_head = NULL;
+    msg_tail = MSGLIST_LAST - 1;
 }
 
 static struct msg_queue *get_recver_msg(struct proc *p)
 {
-    struct msg_queue *mq;
-    for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
+    for (struct msg_queue *mq = msg_head; mq != NULL; mq = mq->next)
         if (mq->flag == MQ_RECV && mq->to == proc2pid(p))
-            break;
+            return mq;
 
-    if (mq == MSGLIST_LAST)
-        return NULL;
-    else
-        return mq;
+    return NULL;
 }
 
 static struct msg_queue *get_sender_msg(struct proc *p)
 {
-    struct msg_queue *mq;
-    for (mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
+    for (struct msg_queue *mq = msg_head; mq != NULL; mq = mq->next)
         if (mq->flag == MQ_SEND && mq->to == proc2pid(p))
-            break;
+            return mq;
 
-    if (mq == MSGLIST_LAST)
-        return NULL;
-    else
-        return mq;
+    return NULL;
+}
+
+struct msg_queue *get_free_msg_slot()
+{
+    for (struct msg_queue *mq = MSGLIST_1ST; mq < MSGLIST_LAST; mq++)
+        if (mq->flag == MQ_INVA)
+            return mq;
+
+    return NULL;
 }
 
 static int msg_queue_insert(u8 f, int fm, int to, struct proc_msg *m)
 {
-    struct msg_queue *msg_head_old = msg_head;
-    do {
-        msg_head++;
-        if (msg_head == MSGLIST_LAST)
-            msg_head = MSGLIST_1ST;
-    } while (msg_head_old != msg_head && msg_head->flag != MQ_INVA);
+    struct msg_queue *mq = msg_head;
 
-    if (msg_head_old == msg_head)
+    if (mq != NULL) {
+        while (mq->next != NULL)
+            mq = mq->next;
+        mq->next = get_free_msg_slot();
+        mq = mq->next;
+    }
+    else {
+        msg_head = mq = get_free_msg_slot();
+    }
+
+    if (mq) {
+        memset(mq, 0, sizeof(struct msg_queue));
+
+        mq->flag = f;
+        mq->from = fm;
+        mq->to = to;
+        mq->msg = m;
+
+        return 0;
+    }
+    else
         return -1;
-
-    memset(msg_head, 0, sizeof(struct msg_queue));
-
-    msg_head->flag = f;
-    msg_head->from = fm;
-    msg_head->to = to;
-    msg_head->msg = m;
-
-    return 0;
 }
 
 static inline void free_mq(struct msg_queue *mq)
 {
     mq->flag = MQ_INVA;
+}
+
+static inline void free_msg_slot(struct msg_queue *mq)
+{
+    mq->flag = MQ_INVA;
+
+    if (msg_head == mq) {
+        msg_head = msg_head->next;
+    }
+    else {
+        struct msg_queue *mq_p = msg_head;
+
+        while (mq_p->next) {
+            if (mq_p->next == mq) {
+                mq_p->next = mq_p->next->next;
+                break;
+            }
+            mq_p = mq_p->next;
+        }
+    }
 }
 
 static void deliver_msg(struct msg_queue *d, struct msg_queue *s)
@@ -91,8 +119,8 @@ static void deliver_msg(struct msg_queue *d, struct msg_queue *s)
         sizeof(struct proc_msg)
     );
 
-    free_mq(d);
-    free_mq(s);
+    free_msg_slot(d);
+    free_msg_slot(s);
 }
 
 int sys_pmsg_send(struct proc *p, int d, struct proc_msg *m)

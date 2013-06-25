@@ -20,7 +20,7 @@ void console_init()
 {
     memset(console_table, 0, NR_CONSOLES * sizeof(struct console));
 
-    int per_con_size = DISPLAY_SIZE / NR_CONSOLES;
+    int per_con_size = 80*20 + 25; //DISPLAY_SIZE / NR_CONSOLES;
     int buf_com = SCREEN_WIDTH;
 
 

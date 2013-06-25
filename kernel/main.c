@@ -52,9 +52,9 @@ void kernel_main()
     sched_init();
     proc_init();
 
-    new_proc(ProcA, "Proc A", 30, stackA + STACK_SIZE);
-    new_proc(ProcB, "Proc B", 30, stackB + STACK_SIZE);
-    new_proc(ProcC, "Proc C", 30, stackC + STACK_SIZE);
+    new_proc(ProcA, "Proc A", 10, stackA + STACK_SIZE);
+    new_proc(ProcB, "Proc B", 20, stackB + STACK_SIZE);
+    new_proc(ProcC, "Proc C", 15, stackC + STACK_SIZE);
     new_proc(ProcD, "Proc D", 30, stackD + STACK_SIZE);
 
     restart();

@@ -93,7 +93,7 @@ void sched_init()
         p->status = STATUS_INVALID;
 
     for (struct task *t = task_table; t < task_table + TASK_NR; t++)
-        new_proc(t->eip, t->name, 10, t->esp);
+        new_proc(t->eip, t->name, 100, t->esp);
 
     k_reenter = 0;
     current = proc_table;
