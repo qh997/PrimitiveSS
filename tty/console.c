@@ -11,6 +11,9 @@ struct console *current_console;
 #define CON_1ST (console_table)
 #define CON_END (console_table + NR_CONSOLES)
 
+#define SCREEN_TO_MEMORY(off) vir2lin(gdt[INDEX_VIDO], off * 2)
+#define MEMUSED(cons) (cons->cursor - cons->cons_start)
+
 extern int disp_pos;
 
 void console_init()
@@ -18,17 +21,17 @@ void console_init()
     memset(console_table, 0, NR_CONSOLES * sizeof(struct console));
 
     int per_con_size = DISPLAY_SIZE / NR_CONSOLES;
-    int buf_com = (per_con_size % SCREEN_WIDTH) ? 0 : SCREEN_WIDTH / 3;
+    int buf_com = SCREEN_WIDTH;
 
 
     for (int i = 0; i < NR_CONSOLES; i++) {
-        struct console *con = &console_table[i];
-        con->cons_start = per_con_size * i;
-        con->cons_size = per_con_size - buf_com;
+        struct console *cons = &console_table[i];
+        cons->cons_start = per_con_size * i;
+        cons->cons_size = per_con_size - buf_com;
 
-        con->scrn_start = con->cons_start;
-        con->cursor = con->cons_start;
-        con->is_full = FALSE;
+        cons->scrn_start = cons->cons_start;
+        cons->cursor = cons->cons_start;
+        cons->is_full = FALSE;
     }
 
     CON_1ST->cursor = disp_pos / 2;
@@ -82,9 +85,8 @@ static void flush()
 
 void output_char(struct console *cons, char ch)
 {
-    u8 *pos = (u8 *)vir2lin(gdt[INDEX_VIDO], cons->cursor * 2);
+    u8 *pos = (u8 *)SCREEN_TO_MEMORY(cons->cursor);
 
-    //int cursor_x = (cons->cursor - cons->scrn_start) % SCREEN_WIDTH;
     int cursor_y = (cons->cursor - cons->scrn_start) / SCREEN_WIDTH;
 
     switch (ch) {
@@ -98,17 +100,25 @@ void output_char(struct console *cons, char ch)
             break;
     }
 
-    cursor_y = (cons->cursor - cons->scrn_start) / SCREEN_WIDTH;
-    if (cursor_y >= SCREEN_LENGTH)
-        cons->scrn_start += SCREEN_WIDTH;
-
-    /*if (!cons->is_full && (cursor_y * (SCREEN_WIDTH + 1) > cons->cons_size))
+    if ((!cons->is_full) && (MEMUSED(cons) >= cons->cons_size))
         cons->is_full = TRUE;
 
-    if (cons->is_full && (cursor_y > SCREEN_LENGTH))
-        cons->cursor -= SCREEN_WIDTH;
-    else if ((!cons->is_full) && (cursor_y > SCREEN_LENGTH))
-        cons->scrn_start += SCREEN_WIDTH;*/
+    if (cons->is_full) {
+        if (MEMUSED(cons) >= cons->cons_size) {
+            memcpy(
+                (void *)SCREEN_TO_MEMORY(cons->cons_start),
+                (void *)SCREEN_TO_MEMORY(cons->cons_start + SCREEN_WIDTH),
+                (MEMUSED(cons) - SCREEN_WIDTH) * 2
+            );
+            cons->cursor -= SCREEN_WIDTH;
+            memset((void *)SCREEN_TO_MEMORY(cons->cursor), 0, SCREEN_WIDTH * 2);
+        }
+    }
+    else {
+        cursor_y = (cons->cursor - cons->scrn_start) / SCREEN_WIDTH;
+        if (cursor_y >= SCREEN_LENGTH)
+            cons->scrn_start += SCREEN_WIDTH;
+    }
 
     flush();
 }

@@ -48,7 +48,7 @@ int printk(const char *fmt, ...)
     i = vsprintf(buf, fmt, arg);
 
     struct proc_msg msg;
-    msg.type = WRITE;
+    msg.type = DEV_WRITE;
     msg.num = 0;
     msg.content = buf;
 

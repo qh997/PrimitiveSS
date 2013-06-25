@@ -22,13 +22,11 @@ void tty_init()
     }
 }
 
-static void tty_write(struct tty *tty, struct proc_msg *msg)
+static void tty_write(struct tty *tty, char *buf)
 {
-    char buf;
-    char *pbuf = (char *)proc2linear(msg->sender, msg->content);
-
-    while ((*(char *)proc2linear(TASK_TTY, &buf) = *(char *)pbuf++)) {
-        output_char(tty->console, buf);
+    char c;
+    while ((*(char *)proc2linear(TASK_TTY, &c) = *(char *)buf++)) {
+        output_char(tty->console, c);
     }
 }
 
@@ -42,8 +40,8 @@ void task_tty()
         send_recv(RECV, ANY, &msg);
 
         switch (msg.type) {
-            case WRITE:
-                tty_write(&tty_table[msg.num], &msg);
+            case DEV_WRITE:
+                tty_write(&tty_table[msg.num], (char *)proc2linear(msg.sender, msg.content));
                 msg.type = RECEIPT;
                 send_recv(SEND, msg.sender, &msg);
                 break;

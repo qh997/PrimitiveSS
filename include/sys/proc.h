@@ -14,7 +14,7 @@ enum msg_type {
     INVALID = 0,
     RECEIPT,
     INT,
-    WRITE,
+    DEV_WRITE,
 };
 
 struct proc_msg {
