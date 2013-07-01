@@ -63,52 +63,18 @@ $(OUT_DIR)/%.o: %.c
 	@$(CC) $(GCC_FLAGS) -o $@ $<
 
 ### Dependencies ###
-../out/kernel/init.o: init.c ../include/sys/global.h \
- ../include/sys/protect.h ../include/types.h ../include/sys/proto.h \
- ../include/string.h ../include/types.h ../include/sys/interrupts.h \
- ../include/stdio.h ../include/sys/sched.h ../include/sys/system.h \
- ../include/sys/syscall.h
+../out/tty/keyboard.o: keyboard.c ../include/tty/keyboard.h \
+ ../include/tty/keymap.h ../include/types.h ../include/sys/interrupts.h \
+ ../include/sys/proto.h ../include/sys/sched.h ../include/sys/protect.h \
+ ../include/sys/system.h ../include/sys/proc.h ../include/tty/tty.h \
+ ../include/tty/console.h
 
-../out/kernel/global.o: global.c ../include/sys/protect.h \
- ../include/types.h
-
-../out/kernel/PIC8259A.o: PIC8259A.c ../include/sys/proto.h \
- ../include/types.h ../include/sys/interrupts.h ../include/string.h \
- ../include/types.h
-
-../out/kernel/protect.o: protect.c ../include/sys/protect.h \
- ../include/types.h ../include/sys/interrupts.h ../include/sys/global.h \
- ../include/stdio.h ../include/types.h ../include/string.h
-
-../out/kernel/traps.o: traps.c ../include/sys/interrupts.h \
- ../include/sys/protect.h ../include/types.h ../include/stdio.h \
- ../include/types.h
-
-../out/kernel/timer.o: timer.c ../include/sys/interrupts.h \
- ../include/sys/proto.h ../include/types.h ../include/stdio.h \
- ../include/types.h ../include/sys/sched.h ../include/sys/protect.h \
- ../include/sys/system.h
-
-../out/kernel/main.o: main.c ../include/stdio.h ../include/types.h \
- ../include/sys/sched.h ../include/sys/protect.h ../include/types.h \
- ../include/sys/system.h ../include/sys/proc.h
-
-../out/kernel/sched.o: sched.c ../include/sys/sched.h \
- ../include/sys/protect.h ../include/types.h ../include/sys/system.h \
- ../include/stdio.h ../include/types.h ../include/string.h
-
-../out/kernel/syscall.o: syscall.c ../include/sys/interrupts.h \
- ../include/sys/syscall.h ../include/types.h ../include/sys/protect.h \
- ../include/sys/sched.h ../include/sys/system.h ../include/sys/proc.h \
- ../include/stdio.h ../include/types.h
-
-../out/kernel/proc.o: proc.c ../include/sys/proc.h ../include/types.h \
+../out/tty/tty.o: tty.c ../include/sys/proc.h ../include/types.h \
  ../include/sys/sched.h ../include/sys/protect.h ../include/sys/system.h \
- ../include/sys/syscall.h ../include/stdio.h ../include/types.h \
- ../include/string.h
+ ../include/tty/console.h ../include/tty/tty.h ../include/string.h \
+ ../include/types.h ../include/tty/keyboard.h
 
-../out/kernel/kernel.o: kernel.s ../include/boot/defs.inc
-
-../out/kernel/ints.o: ints.s ../include/boot/defs.inc \
-  ../include/sys/ints.inc
+../out/tty/console.o: console.c ../include/tty/console.h \
+ ../include/types.h ../include/sys/protect.h ../include/string.h \
+ ../include/types.h ../include/sys/interrupts.h ../include/sys/proto.h
 

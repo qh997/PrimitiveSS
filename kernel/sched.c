@@ -26,7 +26,7 @@ void schedule()
     }
 }
 
-void new_proc(p_entry entry, char *name, int prior, u8 *stk_top)
+void creat_proc(p_entry entry, char *name, int prior, u8 *stk_top)
 {
     int i = 0;
     for (i = 0; i < NR_PROCS; i++)
@@ -93,7 +93,7 @@ void sched_init()
         p->status = STATUS_INVALID;
 
     for (struct task *t = task_table; t < task_table + TASK_NR; t++)
-        new_proc(t->eip, t->name, 100, t->esp);
+        creat_proc(t->eip, t->name, 100, t->esp);
 
     k_reenter = 0;
     current = proc_table;

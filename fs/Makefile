@@ -9,7 +9,7 @@ TREAT_PATH   := | sed 's/.*out\///'
 SILENCE      := > /dev/null 2>&1
 
 ROOT_DIR   := ..
-OUT_DIR    := $(ROOT_DIR)/out/lib
+OUT_DIR    := $(ROOT_DIR)/out/fs
 OBJS_OUT   := $(ROOT_DIR)/objs
 
 INC_PATH := ../include
@@ -17,11 +17,7 @@ INC_PATH := ../include
 NASM_FLAGS := -I $(INC_PATH)/ -f elf32
 GCC_FLAGS := -I $(INC_PATH)/ -c -m32 -std=c99 -fno-builtin -nostdlib -Wall -fomit-frame-pointer
 
-OBJS += $(OUT_DIR)/lib_a.o
-OBJS += $(OUT_DIR)/lib.o
-OBJS += $(OUT_DIR)/printf.o
-OBJS += $(OUT_DIR)/vsprintf.o
-OBJS += $(OUT_DIR)/string.o
+OBJS += $(OUT_DIR)/main.o
 
 OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
@@ -29,16 +25,16 @@ OUT_OBJS := $(foreach obj, $(OBJS), $(subst $(ROOT_DIR),., $(obj)))
 
 everything: init $(OBJS)
 
-all: everything install
+all: everything
 
 new: clean all
 
 init:
 	@mkdir -p $(OUT_DIR)
-	@echo -n $(OUT_OBJS) >> $(OBJS_OUT)
+	@echo -n "$(OUT_OBJS) " >> $(OBJS_OUT)
 
 clean:
-	@echo '  clean lib ...'
+	@echo '  clean kernel ...'
 	@rm -rf $(OUT_DIR)
 
 dep:
@@ -65,21 +61,5 @@ $(OUT_DIR)/%.o: %.c
 	@$(CC) $(GCC_FLAGS) -o $@ $<
 
 ### Dependencies ###
-../out/lib/lib.o: lib.c ../include/types.h ../include/sys/global.h \
- ../include/sys/protect.h ../include/sys/proto.h ../include/sys/proc.h \
- ../include/sys/sched.h ../include/sys/system.h ../include/string.h \
- ../include/types.h
-
-../out/lib/printf.o: printf.c ../include/types.h ../include/sys/global.h \
- ../include/sys/protect.h ../include/sys/proto.h ../include/stdio.h \
- ../include/types.h ../include/string.h ../include/sys/system.h \
- ../include/sys/sched.h ../include/sys/proc.h
-
-../out/lib/vsprintf.o: vsprintf.c ../include/types.h ../include/string.h \
- ../include/types.h ../include/stdio.h
-
-../out/lib/string.o: string.c ../include/types.h ../include/sys/global.h \
- ../include/sys/protect.h ../include/sys/proto.h
-
-../out/lib/lib_a.o: lib_a.s
+../out/fs/main.o: main.c
 

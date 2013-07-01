@@ -19,6 +19,7 @@ BOOT_DIR   := $(ROOT_DIR)/boot
 KERNEL_DIR := $(ROOT_DIR)/kernel
 LIB_DIR    := $(ROOT_DIR)/lib
 TTY_DIR    := $(ROOT_DIR)/tty
+FS_DIR     := $(ROOT_DIR)/fs
 
 INC_PATH := ./include
 
@@ -52,6 +53,7 @@ clean:
 	@$(MAKE_SUB) $(KERNEL_DIR) $@
 	@$(MAKE_SUB) $(LIB_DIR) $@
 	@$(MAKE_SUB) $(TTY_DIR) $@
+	@$(MAKE_SUB) $(FS_DIR) $@
 	@echo '  clean out ...'
 	@rm -rf $(OUT_DIR)
 	@rm -f $(OBJS_OUT)
@@ -73,6 +75,7 @@ dep:
 	@$(MAKE_SUB) $(KERNEL_DIR) $@
 	@$(MAKE_SUB) $(LIB_DIR) $@
 	@$(MAKE_SUB) $(TTY_DIR) $@
+	@$(MAKE_SUB) $(FS_DIR) $@
 
 boot:
 	@$(MAKE_SUB) $(BOOT_DIR)
@@ -81,6 +84,7 @@ kernel:
 	@$(MAKE_SUB) $(KERNEL_DIR)
 	@$(MAKE_SUB) $(LIB_DIR)
 	@$(MAKE_SUB) $(TTY_DIR)
+	@$(MAKE_SUB) $(FS_DIR)
 
 $(KERNEL_BIN):
 	@$(SHOW_LNK_OBJ) $@ $(TREAT_PATH)

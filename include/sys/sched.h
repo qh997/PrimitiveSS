@@ -77,7 +77,7 @@ extern u8 k_reenter;
 
 #define TASK_TTY 0
 
-void new_proc(p_entry entry, char *name, int prior, u8 *stk_top);
+void creat_proc(p_entry entry, char *name, int prior, u8 *stk_top);
 void sched_init();
 void schedule();
 

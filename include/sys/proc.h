@@ -14,6 +14,7 @@ enum msg_type {
     INVALID = 0,
     RECEIPT,
     INT,
+    DEV_OPEN,
     DEV_WRITE,
 };
 
